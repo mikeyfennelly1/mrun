@@ -1,0 +1,13 @@
+= mrun (Mike's runtime)
+
+mrun is a low level container runtime written in Go, with CLI capabilities. It is compliant with the OCI spec for container runtimes. The version of the OCI spec is yet to be decided.
+
+== Inspiration
+
+TL;DR: This is inspired by runc.
+
+The inspiration came from reading into modern container tools (Podman/Docker/Kubernetes), and the architecture of them. I am getting quite interested in this stuff, so I am using this as a method of getting hands-on with this sort of stuff.
+
+== Install
+
+You can go to the versions/release page (here), and choose which binary suits your setup.
