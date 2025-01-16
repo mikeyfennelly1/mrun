@@ -10,7 +10,7 @@ func main() {
 		Use:   "mrun",
 		Short: "A low-level container runtime for managing the lifecycle of OCI compliant Linux containers.",
 	}
-	
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 	}
