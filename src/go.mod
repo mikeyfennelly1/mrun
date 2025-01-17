@@ -1,4 +1,4 @@
-module example.com/m/v2
+module github.com/mikeyfennelly1/mrun/v2
 
 go 1.23
 
