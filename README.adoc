@@ -8,7 +8,7 @@ You can go to the versions/release page (here), and choose which binary suits yo
 
 == Inspiration
 
-TL;DR: This is inspired by runc.
+_TL;DR: This is inspired by runc/crun._
 
 The inspiration came from reading into modern container tools (Podman/Docker/Kubernetes), and seeing that they all rely on container runtimes. Due to this topic being primitive to many cloud tools I thought it would be worthwhile and interesting to learn how the fundamentals work - this is an exercise in doing that. I am getting quite interested in this stuff, so I am using this as a method of getting hands-on with this sort of stuff.
 
