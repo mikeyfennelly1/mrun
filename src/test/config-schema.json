@@ -21,7 +21,7 @@
         "startContainer": {
           "$ref": "defs.json#/definitions/ArrayOfHooks"
         },
-        "poststart": {
+        "poststart": {741
           "$ref": "defs.json#/definitions/ArrayOfHooks"
         },
         "poststop": {

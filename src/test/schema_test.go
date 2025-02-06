@@ -7,7 +7,7 @@ import (
 )
 
 func TestSchema(t *testing.T) {
-	schemaLoader := gojsonschema.NewReferenceLoader("/home/mfennelly/projects/mrun/src/test/config-schema.json")
+	schemaLoader := gojsonschema.NewReferenceLoader("file://./config-schema.json")
 
 	// Read the configuration file
 	configData, err := os.ReadFile("./exampleConfig.json")
@@ -33,4 +33,8 @@ func TestSchema(t *testing.T) {
 	} else {
 		t.Log("Validation succeeded. The document is schema-compliant.")
 	}
+}
+
+func TestSpecMarshalling(t *testing.T) {
+
 }
