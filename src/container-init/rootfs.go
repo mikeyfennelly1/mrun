@@ -1,8 +1,11 @@
 package container_init
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 )
 
 // This file is created to build a container root filesystem with
@@ -44,4 +47,39 @@ func UnMarshalLayer(layerJSONString string) (*Layer, error) {
 	var layer Layer
 	err := json.Unmarshal([]byte(layerJSONString), &layer)
 	return &layer, err
+}
+
+func UnpackGzipFile(gzFilePath, dstFilePath string) (int64, error) {
+	gzFile, err := os.Open(gzFilePath)
+	if err != nil {
+		return 0, fmt.Errorf("open file %q to unpack: %w", gzFilePath, err)
+	}
+	dstFile, err := os.OpenFile(dstFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
+	if err != nil {
+		return 0, fmt.Errorf("create destination file %q to unpack: %w", dstFilePath, err)
+	}
+	defer dstFile.Close()
+
+	ioReader, ioWriter := io.Pipe()
+	defer ioReader.Close()
+
+	go func() { // goroutine leak is possible here
+		gzReader, _ := gzip.NewReader(gzFile)
+		// it is important to close the writer or reading from the other end of the
+		// pipe or io.copy() will never finish
+		defer func() {
+			gzFile.Close()
+			gzReader.Close()
+			ioWriter.Close()
+		}()
+
+		io.Copy(ioWriter, gzReader)
+	}()
+
+	written, err := io.Copy(dstFile, ioReader)
+	if err != nil {
+		return 0, err // goroutine leak is possible here
+	}
+
+	return written, nil
 }
