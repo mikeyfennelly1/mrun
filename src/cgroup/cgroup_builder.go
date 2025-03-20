@@ -8,16 +8,22 @@
 
 package cgroup
 
+import (
+	"fmt"
+	"github.com/moby/sys/mount"
+	"syscall"
+)
+
 type CgroupType int
 
 const (
 	// Cgroup Types
 	Domain CgroupType = iota
 	Threaded
+	DefaultMountPoint string = SysFsCgroup + "/user.slice/user-1000.slice/user@1000.service/user.slice/"
 )
 
 // Cgroup
-//
 // Represents a cgroup filesystem.
 type Cgroup struct {
 	// name of the control group that you want to create
@@ -33,7 +39,9 @@ type Cgroup struct {
 	// https://docs.kernel.org/admin-guide/cgroup-v2.html#basic-operations
 	//
 	// in a system with systemd this is typically a '.slice' subdirectory
-	mountPoint string
+	/////////
+	// providing no mountPoint options for early versions
+	/////////
 
 	// controllers
 	// the controllers that you want to have in the control group
@@ -45,15 +53,27 @@ type Cgroup struct {
 	pids []int
 }
 
-// getAbsolutePath
-//
-// get the absolute path to the cgroup
-func (cg *Cgroup) getAbsolutePath(uid int) *string {
-	return nil
-}
-
 // create
 // Make an instance of the cgroup that you want
 func (cg *Cgroup) create() error {
+	return nil
+}
+
+// getAbsolutePath
+// get the absolute path to the cgroup
+func (cg *Cgroup) getAbsolutePath(uid int) string {
+	absolutePath := DefaultMountPoint + cg.name
+	return absolutePath
+}
+
+func (cg *Cgroup) mount() error {
+	mountType := "cgroup2"  // type of filesystem to mount
+	target := "/" + cg.name // target mount filesystem
+
+	err := mount.Mount(DefaultMountPoint, target, mountType, "")
+	if err != nil {
+		return fmt.Errorf("Could not mount cgroup filesystem: %s\n", err.Error())
+	}
+
 	return nil
 }
