@@ -10,4 +10,9 @@ type Controllers struct {
 	// memory
 	// nil if controller not initialized
 	memory *memController
+
+	// pid
+	pid *pidController
+
+	cgroup *cgroupController
 }
