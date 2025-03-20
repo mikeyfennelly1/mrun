@@ -4,7 +4,10 @@
 //
 // @author Mikey Fennelly
 
-package cgroup
+package controllers
 
 type Controllers struct {
+	// memory
+	// nil if controller not initialized
+	memory *memController
 }

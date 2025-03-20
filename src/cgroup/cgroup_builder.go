@@ -77,3 +77,9 @@ func (cg *Cgroup) mount() error {
 
 	return nil
 }
+
+// movePidsToCg
+// move processes (cg.pids) into a control group
+func (cg *Cgroup) movePidsToCg() error {
+	return nil
+}
