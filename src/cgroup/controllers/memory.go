@@ -2,25 +2,29 @@
 
 package controllers
 
+import "strconv"
+
+type controllerFilename string
+
 type memController struct {
 	memLimits  *memLimits
 	swapLimits *swapLimits
 }
 
 type memLimits struct {
-	high int64
-	low  int64
-	max  int64
-	min  int64
-	peak int64
+	high int
+	low  int
+	max  int
+	min  int
+	peak int
 }
 
 // swapLimits
 // limits for swap space
 type swapLimits struct {
-	high int64
-	max  int64
-	peak int64
+	high int
+	max  int
+	peak int
 }
 
 var DefaultMemController = memController{
@@ -42,6 +46,22 @@ var DefaultMemLimits = &memLimits{
 	peak: 40000,
 }
 
-func (mc *memController) write(parentDirPath string) {
+// GetTargetWriteValKVPs
+//
+// Get a map of controller filenames and string values
+// of what to write to those controller files to instantiate
+// that controller.
+func (mc *memController) GetTargetWriteValKVPs() map[controllerFilename]string {
+	fileWriteValMap := map[controllerFilename]string{
+		"memory.high":      strconv.Itoa(mc.memLimits.high),
+		"memory.low":       strconv.Itoa(mc.memLimits.low),
+		"memory.max":       strconv.Itoa(mc.memLimits.max),
+		"memory.min":       strconv.Itoa(mc.memLimits.min),
+		"memory.peak":      strconv.Itoa(mc.memLimits.peak),
+		"memory.swap.high": strconv.Itoa(mc.swapLimits.high),
+		"memory.swap.max":  strconv.Itoa(mc.swapLimits.max),
+		"memory.swap.peak": strconv.Itoa(mc.swapLimits.peak),
+	}
 
+	return fileWriteValMap
 }
