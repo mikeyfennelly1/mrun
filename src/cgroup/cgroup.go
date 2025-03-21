@@ -13,32 +13,46 @@ import (
 const (
 	SysFsCgroup = "/sys/fs/cgroup"
 
-	// default cgroup mount target is the
-	// user-1000 user slice
+	// DefaultCgroupMountTarget
+	// default cgroup mount target is the user-1000 user slice
 	DefaultCgroupMountTarget = SysFsCgroup + "/user.slice/user-1000.slice/user@1000.service/user.slice/"
 )
 
 type Cgroup struct {
-	Name              string
-	ControllerProfile *controller.ControllerProfile
+	Name string
+	// memoryController
+	// nil if controller not enabled
+	memoryController *controller.MemoryController
+
+	// pid
+	pid *controller.PidController
+
+	cgroup *controller.CgroupController
 }
 
 // Create
 //
 // Make an instance of the control group.
 func (cg *Cgroup) Create() error {
-	cg.CreateCgroupDir()
-	cg.EnableCgroupControllers()
-	cg.UpdateControllerProfile()
+	err := cg.CreateCgroupDir()
+	if err != nil {
+		return err
+	}
+	err = cg.UpdateSubControllers()
+	if err != nil {
+		return err
+	}
+	err = cg.UpdateSubControllers()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (cg *Cgroup) UpdateControllerProfile() {
-
-}
-
-func (cg *Cgroup) EnableCgroupControllers() error {
-	enabledControllers := cg.ControllerProfile.
+// UpdateSubControllers
+//
+// Write values to sub-controller files for all controllers
+func (cg *Cgroup) UpdateSubControllers() error {
 
 	return nil
 }
@@ -46,17 +60,17 @@ func (cg *Cgroup) EnableCgroupControllers() error {
 // WriteToCgroupController
 //
 // Write a value to a controller in the cgroup by controller name.
-func (cg *Cgroup) WriteToCgroupController(controllerName string, writeValue string) error {
-	controllerAbsPath := cg.GetCgroupAbsolutePath() + controllerName
+func (cg *Cgroup) WriteToCgroupController(subControllerName string, writeValue string) error {
+	controllerAbsPath := cg.GetCgroupAbsolutePath() + subControllerName
 
-	controller, err := os.OpenFile(controllerAbsPath, os.O_WRONLY, 0644)
+	subControllerFile, err := os.OpenFile(controllerAbsPath, os.O_WRONLY, 0644)
 	if err != nil {
-		return fmt.Errorf("Could not open controller file '%s': %v\n", controllerAbsPath, err)
+		return fmt.Errorf("Could not open subControllerFile file '%s': %v\n", controllerAbsPath, err)
 	}
 
-	_, err = controller.Write([]byte(writeValue))
+	_, err = subControllerFile.Write([]byte(writeValue))
 	if err != nil {
-		return fmt.Errorf("Could not write to controller file '%s': %v\n", controllerAbsPath, err)
+		return fmt.Errorf("Could not write to subControllerFile file '%s': %v\n", controllerAbsPath, err)
 	}
 
 	return nil

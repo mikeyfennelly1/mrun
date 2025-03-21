@@ -1,4 +1,4 @@
-// memory.go
+// memory_controller.go
 
 package controller
 
@@ -6,7 +6,7 @@ import "strconv"
 
 type controllerFilename string
 
-type memController struct {
+type MemoryController struct {
 	memLimits  *memLimits
 	swapLimits *swapLimits
 }
@@ -27,7 +27,7 @@ type swapLimits struct {
 	peak int
 }
 
-var DefaultMemController = memController{
+var DefaultMemController = MemoryController{
 	memLimits:  DefaultMemLimits,
 	swapLimits: DefaultSwapLimits,
 }
@@ -46,12 +46,7 @@ var DefaultMemLimits = &memLimits{
 	peak: 40000,
 }
 
-// GetTargetWriteValKVPs
-//
-// Get a map of controller filenames and string values
-// of what to write to those controller files to instantiate
-// that controller.
-func (mc *memController) GetTargetWriteValKVPs() map[controllerFilename]string {
+func (mc *MemoryController) GetTargetWriteValKVPs() map[controllerFilename]string {
 	fileWriteValMap := map[controllerFilename]string{
 		"memory.high":      strconv.Itoa(mc.memLimits.high),
 		"memory.low":       strconv.Itoa(mc.memLimits.low),
