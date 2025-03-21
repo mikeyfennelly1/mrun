@@ -6,9 +6,9 @@
 mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtime written in Go. It contains a package that you can download for interacting with the cgroup filesystem interface, documentation about container technology, a command line to use the tool and _more to come_...
 
 [NOTE]
-----
-DISCALIMER: This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
-----
+====
+This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
+====
 
 === Original Goals of this project
 
