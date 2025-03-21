@@ -14,11 +14,15 @@ const (
 	TestCgroupName = "test-cgroup3"
 )
 
+var testCgroup = cgroup.Cgroup{
+	Name: "test-cgroup",
+}
+
 // TestDestroyCgroup
 //
 // Test destroying a control group.
 func TestDestroyCgroup(t *testing.T) {
-	result := cgroup.DestroyCgroup(TestCgroupName)
+	result := testCgroup.Destroy()
 	require.NoError(t, result)
 }
 
@@ -34,9 +38,9 @@ func TestRootfulCgroupOperations(t *testing.T) {
 		}
 	}()
 
-	defer cgroup.DestroyCgroup(TestCgroupName)
+	defer testCgroup.Destroy()
 
-	result := cgroup.CreateCgroup(TestCgroupName)
+	result := testCgroup.CreateCgroupDir()
 	defer require.NoError(t, result)
 }
 
@@ -55,8 +59,8 @@ func TestRootLessCgroupOperationFailure(t *testing.T) {
 		}
 	}()
 
-	defer cgroup.DestroyCgroup(TestCgroupName)
+	defer testCgroup.Destroy()
 
 	// this should panic
-	cgroup.CreateCgroup(TestCgroupName)
+	testCgroup.CreateCgroupDir()
 }
