@@ -7,8 +7,8 @@
 package controllers
 
 type Controller interface {
-	// write the value of the controller to a file
-	writeControllerValueToTarget(cgroupFsRoot string, controllerFilename string) error
+	enable() error
+	setControllerValues() error
 }
 
 type ControllerProfile struct {
