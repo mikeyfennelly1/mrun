@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 var DefaultControllerProfile = ControllerProfile{
 	memory: &DefaultMemController,

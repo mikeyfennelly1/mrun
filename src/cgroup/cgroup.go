@@ -6,6 +6,7 @@ package cgroup
 import (
 	"errors"
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/src/cgroup/controller"
 	"os"
 )
 
@@ -17,14 +18,66 @@ const (
 	DefaultCgroupMountTarget = SysFsCgroup + "/user.slice/user-1000.slice/user@1000.service/user.slice/"
 )
 
-// CreateCgroup
+type Cgroup struct {
+	Name              string
+	ControllerProfile *controller.ControllerProfile
+}
+
+// Create
 //
-// Create a cgroup from OCI spec JSON
-func CreateCgroup(cgroupName string) error {
+// Make an instance of the control group.
+func (cg *Cgroup) Create() error {
+	cg.CreateCgroupDir()
+	cg.EnableCgroupControllers()
+	cg.UpdateControllerProfile()
+	return nil
+}
+
+func (cg *Cgroup) UpdateControllerProfile() {
+
+}
+
+func (cg *Cgroup) EnableCgroupControllers() error {
+	enabledControllers := cg.ControllerProfile.
+
+	return nil
+}
+
+// WriteToCgroupController
+//
+// Write a value to a controller in the cgroup by controller name.
+func (cg *Cgroup) WriteToCgroupController(controllerName string, writeValue string) error {
+	controllerAbsPath := cg.GetCgroupAbsolutePath() + controllerName
+
+	controller, err := os.OpenFile(controllerAbsPath, os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("Could not open controller file '%s': %v\n", controllerAbsPath, err)
+	}
+
+	_, err = controller.Write([]byte(writeValue))
+	if err != nil {
+		return fmt.Errorf("Could not write to controller file '%s': %v\n", controllerAbsPath, err)
+	}
+
+	return nil
+}
+
+// GetCgroupAbsolutePath
+//
+// Get the absolute path to the cgroup
+func (cg *Cgroup) GetCgroupAbsolutePath() string {
+	absPath := DefaultCgroupMountTarget + cg.Name
+	return absPath
+}
+
+// CreateCgroupDir
+//
+// an instance of your cgroup at the desired file location
+func (cg *Cgroup) CreateCgroupDir() error {
 	// check if program is being run as root
 	MustBeRoot()
 
-	cgroupAbsPath := DefaultCgroupMountTarget + cgroupName // absolute path of the cgroup being created
+	cgroupAbsPath := cg.GetCgroupAbsolutePath() // absolute path of the cgroup being created
 
 	err := os.Mkdir(cgroupAbsPath, 0755)
 	if err != nil {
@@ -34,16 +87,16 @@ func CreateCgroup(cgroupName string) error {
 	return nil
 }
 
-// DestroyCgroup
+// Destroy
 //
 // Remove a control group by cgroupName
-func DestroyCgroup(cgroupName string) error {
+func (cg *Cgroup) Destroy() error {
 	MustBeRoot()
 
-	cgroupAbsPath := DefaultCgroupMountTarget + cgroupName
+	cgroupAbsPath := cg.GetCgroupAbsolutePath()
 	err := os.RemoveAll(cgroupAbsPath)
 	if err != nil {
-		return fmt.Errorf("Could not remove cgroup at %s \n", cgroupName)
+		return fmt.Errorf("Could not remove cgroup at %s \n", cg.Name)
 	}
 
 	return nil

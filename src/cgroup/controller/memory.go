@@ -1,6 +1,6 @@
 // memory.go
 
-package controllers
+package controller
 
 import "strconv"
 

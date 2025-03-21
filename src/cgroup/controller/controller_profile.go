@@ -1,23 +1,4 @@
-// controllers.go
-//
-// Interact with controllers in a cgroup
-//
-// @author Mikey Fennelly
-
-package controllers
-
-type ControllerId int
-
-const (
-	memoryControllerID ControllerId = iota
-	pidControllerID
-	cgroupControllerID
-)
-
-type Controller interface {
-	enable() error
-	setControllerValues() error
-}
+package controller
 
 type ControllerProfile struct {
 	// memory
@@ -30,7 +11,7 @@ type ControllerProfile struct {
 	cgroup *cgroupController
 }
 
-func (cp *ControllerProfile) getEnabledControllers() []ControllerId {
+func (cp *ControllerProfile) GetEnabledControllers() []ControllerId {
 	var enabledControllers []ControllerId
 
 	if cp.memory != nil {

@@ -1,0 +1,15 @@
+= controller
+
+A controller is an interface to control a resource. These controllers can be used to control resources for that cgroups processes such as:
+
+1. memory
+2. pid
+3. cpu
+4. cpuset
+5. io _(block I/O)_
+6. net_cls _(network packet class)_
+7. net_prio _(network priority for outbound traffic)_
+8. rdma
+9. devices
+
+These controllers are divided into sub-controllers. These sub-controllers manipulate parts of the controller, for example the memory sub-controller `memory.high` defines a high end limit to the memory that is available to the processes in the control group, and to child control groups of the control group.

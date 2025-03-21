@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 type pidController struct {
 	max  int64

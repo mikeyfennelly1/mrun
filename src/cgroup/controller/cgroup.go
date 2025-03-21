@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 // cgroupController
 type cgroupController struct {
