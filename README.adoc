@@ -18,4 +18,6 @@ Originally this project was created as a way to learn Linux and container techno
 
 During the creation of this project I did a lot of reading on containerization. I have created documentation in `/docs`, which has some reading that can be a bit more approachable to a newcomer than trying to sieve through the internet for reading material.
 
-The docs folder has reading about OCI standards, Kernel features that underpin container technology and additional miscellaneous docs. Enjoy!
+The docs folder has reading about OCI standards, Kernel features that underpin container technology and additional miscellaneous docs.
+
+Enjoy!
