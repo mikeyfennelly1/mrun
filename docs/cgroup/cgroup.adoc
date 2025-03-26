@@ -1,19 +1,31 @@
 = cgroup
+:toc:
 
 cgroups (control groups) are a cornerstone of what makes a container. The cgroup interface is a filesystem interface, but mrun contains a package to create and modify control groups programatically.
 
-== What is a cgroup?
+== High level Prerequite Information
+
+=== What is a cgroup?
 
 A cgroup is essentially a set of rules in the kernel that you can apply to 1 or more processes in the kernel.
 
-== How are cgroups created from user space?
+=== How are cgroups created from user space?
 
 Through the cgroup virtual filesystem `/sys/fs/cgroup`. The directory structure and files in this virtual filesystem define the rules imposed on the processes in each cgroup. A cgroup is represented as a directory, and a file in a cgroup is known as a controller (hence the name _control groups_).
 
-=== What is a controller
+==== What is a controller
 
 A controller is essentially a little specific interface that you can use to define a part of a cgroup. Whether this be a resource restriction, or a restriction on child cgroups.
 
-== What are cgroups in the context of containers
+=== What cgroups provide to containers
 
 cgroups are the element of containers that perform resource restriction on the processes in a container. The dynamic nature of controllers, allows cgroups to give containers in turn a dynamic resource consumption, this allows containers to _increase and decrease their resource consumption on demand_ (even though this is not language that is necessarily appropriate for how containers really work, it is helpful to help a newcomer understand).
+
+== The cgroup package for mrun
+
+_This document will only provide information on how to interface with the mrun cgroup package, not it's internals._
+
+The cgroup package for mrun is an API that can be used to create control groups.
+
+Control groups in containers are defined in the config.json for a container image. The section of the config.json that provides this is called the:
+
