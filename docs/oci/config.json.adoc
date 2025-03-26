@@ -1,0 +1,83 @@
+= config.json
+:toc:
+
+This document provides a high level overview of what the config.json file is.
+
+The OCI specification for runtimes specifies the config.json https://github.com/opencontainers/runtime-spec/blob/main/config.md[here].
+
+[NOTE]
+
+The config.json document is a canonical configuration. These configurations are often platform dependant in reality, and there is platform dependent objects that can be added to the canonical config to add more configuration options. Here is the OCI document for Linux specific config objects, there is also platform specific config objects for Windows, Solaris, z/OS etc. This document is only concerned with Linux.
+
+_https://github.com/opencontainers/runtime-spec/blob/main/config.md#configuration-schema-example[Here] is an example of a config.json file._
+
+== What is the purpose of the config.json file?
+
+**TL;DR:** To provide metadata necessary to implement standard operations against the container.
+
+config.json is the canonical config file for an OCI compliant container. There can be Linux specific section to this config file. "_The Linux container specification uses various kernel features like namespaces, cgroups, capabilities, LSM, and filesystem jails to fulfill the spec._"
+
+[Here is the Linux platform specific config file].
+
+=== What is the difference between config.json and config-schema.json?
+
+config-schema.json is just a JSON schema that can be used to validate the config.json.
+
+=== What is the relationship between config.json and config-linux.json?
+
+config-linux.json is a json file that can be used as a reference for the linux specific section in a config file.
+
+== Objects in config.json
+
+- Specification Version
+- Root
+- Mounts
+    a. Linux Mount options
+- Process _(very platform dependant)_
+- Posix Process
+- Linux Process
+- z/OS Process
+- User
+- POSIX platform user
+- Hostname
+- Domainname
+
+Some of the objects within these higher level objects can be platform specific.
+
+=== Additional POSIX/Linux specific objects defined in config.json
+
+- hooks (POSIX-platform hooks)
+a. prestart
+b. CreateRuntime
+c. CreateContainer
+d. StartContainer
+e. PostStart
+
+== Linux specific configuration objects
+
+- Namespaces
+- User namespace mappings
+- Offset for time namespace
+- Devices
+a. Default Devices
+- Control Groups
+a. cgroups path
+b. cgroup ownership
+- allowed devices list
+- Memory
+- CPU
+- Block I/O
+- Huge Page Limits
+- Network
+- PIDs
+- RDMA
+- Unified (_cgroupv2_)
+- IntelRdt
+- Sysctl
+- Seccomp
+- The Container Process State
+- Rootfs mount propagation
+- Masked Paths
+- Readonly Paths
+- Mount Label
+- Personality
