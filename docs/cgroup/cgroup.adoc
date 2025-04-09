@@ -35,7 +35,7 @@ The OCI config.json for linux includes an object called "resources", that is ess
 8. network
 9. rdma
 
-This corresponds exactly to how a cgroupv2 filesystem would look.
+This corresponds exactly to how a cgroupv2 filesystem leaf directory would look.
 
 === Other important properties in relation to cgroups in config-linux.json
 

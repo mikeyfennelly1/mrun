@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+// TestMountCgroup
+// Test Mounting a cgroup filesystem at a specified
 func TestMountCgroup(t *testing.T) {
 	err := mount.MountCgroup("testie")
 	assert.NoError(t, err)
