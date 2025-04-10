@@ -39,21 +39,25 @@ defs-linux.json
 */
 
 func TestNSEnter(t *testing.T) {
-	jsonNamespaces := `{
-		"namespaces": [
+	jsonNamespaces := `[
 			{ "type": "pid" },
 			{ "type": "network" },
 			{ "type": "ipc" },
 			{ "type": "uts" },
 			{ "type": "mount" },
 			{ "type": "cgroup" }
-		]
-	}`
+		]`
 	var testNamespaces []specs.LinuxNamespace
 	err := json.Unmarshal([]byte(jsonNamespaces), &testNamespaces)
 	if err != nil {
 		return
 	}
+
+	var testNamespaceProfile procNamespaceProfile
+	testNamespaceProfile.Namespaces = testNamespaces
+	testNamespaceProfile.processBinary = ""
+
+	testNamespaceProfile.startBashInNewNamespaces()
 
 	require.NoError(t, err)
 }

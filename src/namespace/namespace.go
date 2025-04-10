@@ -15,7 +15,7 @@ type procNamespaceProfile struct {
 
 	// these namespaces will correspond to the clone flags
 	// that are used when this proc is cloned
-	Namespaces []specs.LinuxNamespaceType
+	Namespaces []specs.LinuxNamespace
 }
 
 func (p *procNamespaceProfile) startBashInNewNamespaces() {
@@ -41,7 +41,7 @@ func (p *procNamespaceProfile) getCloneFlagBitMask() uintptr {
 	result := 0
 
 	for _, ns := range p.Namespaces {
-		switch ns {
+		switch ns.Type {
 		case "mount":
 			result |= syscall.CLONE_NEWNS
 		case "pid":
