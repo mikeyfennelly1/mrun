@@ -2,23 +2,24 @@ package namespace
 
 import (
 	"github.com/opencontainers/runtime-spec/specs-go"
+	"golang.org/x/sys/unix"
 	"log"
 	"os"
 	"os/exec"
 	"syscall"
 )
 
-type procNamespaceProfile struct {
+type ProcNamespaceProfile struct {
 	// the binary to run when we enter the new namespace
 	// if left as an empty string, process binary will be bash
-	processBinary string
+	ProcessBinary string
 
 	// these namespaces will correspond to the clone flags
 	// that are used when this proc is cloned
 	Namespaces []specs.LinuxNamespace
 }
 
-func (p *procNamespaceProfile) startBashInNewNamespaces() {
+func (p *ProcNamespaceProfile) StartBashInNewNamespaces() {
 	cmd := exec.Command("/bin/bash")
 
 	// Set the command to run in a new mount namespace
@@ -37,27 +38,27 @@ func (p *procNamespaceProfile) startBashInNewNamespaces() {
 	}
 }
 
-func (p *procNamespaceProfile) getCloneFlagBitMask() uintptr {
+func (p *ProcNamespaceProfile) getCloneFlagBitMask() uintptr {
 	result := 0
 
 	for _, ns := range p.Namespaces {
 		switch ns.Type {
 		case "mount":
-			result |= syscall.CLONE_NEWNS
+			result |= unix.CLONE_NEWNS
 		case "pid":
-			result |= syscall.CLONE_NEWPID
+			result |= unix.CLONE_NEWPID
 		case "network":
-			result |= syscall.CLONE_NEWNET
+			result |= unix.CLONE_NEWNET
 		case "uts":
-			result |= syscall.CLONE_NEWUTS
+			result |= unix.CLONE_NEWUTS
 		case "ipc":
-			result |= syscall.CLONE_NEWIPC
+			result |= unix.CLONE_NEWIPC
 		case "user":
 			result |= syscall.CLONE_NEWUSER
 		case "cgroup":
-			result |= syscall.CLONE_NEWCGROUP
+			result |= unix.CLONE_NEWCGROUP
 		case "time":
-			result |= syscall.CLONE_NEWTIME
+			result |= unix.CLONE_NEWTIME
 		default:
 			return 0
 		}

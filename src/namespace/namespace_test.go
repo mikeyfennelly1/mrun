@@ -53,11 +53,11 @@ func TestNSEnter(t *testing.T) {
 		return
 	}
 
-	var testNamespaceProfile procNamespaceProfile
+	var testNamespaceProfile ProcNamespaceProfile
 	testNamespaceProfile.Namespaces = testNamespaces
-	testNamespaceProfile.processBinary = ""
+	testNamespaceProfile.ProcessBinary = ""
 
-	testNamespaceProfile.startBashInNewNamespaces()
+	testNamespaceProfile.StartBashInNewNamespaces()
 
 	require.NoError(t, err)
 }
