@@ -10,6 +10,7 @@ import (
 
 type procNamespaceProfile struct {
 	// the binary to run when we enter the new namespace
+	// if left as an empty string, process binary will be bash
 	processBinary string
 
 	// these namespaces will correspond to the clone flags
