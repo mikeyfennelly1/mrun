@@ -16,15 +16,12 @@ var rootCmd = &cobra.Command{
 }
 
 // command for removing an eefenn-cli command
-var rmCommand = &cobra.Command{
+var startCommand = &cobra.Command{
 	Use:   "start",
 	Short: "Start a container.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},
-}
-
-func init() {
 }
 
 func main() {
@@ -34,7 +31,7 @@ func main() {
 		return
 	}
 
-	rootCmd.AddCommand(rmCommand)
+	rootCmd.AddCommand(startCommand)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
