@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
@@ -68,12 +67,6 @@ var chrootCommand = &cobra.Command{
 		err = os.Chdir("./rootfs")
 		if err != nil {
 			fmt.Printf("error changing directory to rootfs: %v", err)
-			return
-		}
-
-		err = fs.CreateFileSystem(spec)
-		if err != nil {
-			fmt.Printf("error creating filesystem: %v", err)
 			return
 		}
 
