@@ -1,13 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
-	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
 	"os"
+	"os/exec"
+	"syscall"
 )
+
+var rootfsPath string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -18,40 +20,41 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// command for removing an eefenn-cli command
 var startCommand = &cobra.Command{
 	Use:   "start",
-	Short: "Start a container.",
+	Short: "Start an isolated environment.",
 	Run: func(cmd *cobra.Command, args []string) {
-	},
-}
-
-// command for removing an eefenn-cli command
-var isoBashCommand = &cobra.Command{
-	Use:   "isobash",
-	Short: "Start an isolated bash process in it's own namespaces.",
-	Run: func(cmd *cobra.Command, args []string) {
-		jsonNamespaces := `[
-			{ "type": "pid" },
-			{ "type": "network" },
-			{ "type": "ipc" },
-			{ "type": "uts" },
-			{ "type": "mount" },
-			{ "type": "cgroup" }
-		]`
-		var testNamespaces []specs.LinuxNamespace
-		err := json.Unmarshal([]byte(jsonNamespaces), &testNamespaces)
+		err := namespace.RestartInNewNS("chroot")
 		if err != nil {
 			return
 		}
-
-		var testNamespaceProfile namespace.ProcNamespaceProfile
-		testNamespaceProfile.Namespaces = testNamespaces
-		testNamespaceProfile.ProcessBinary = ""
-
-		testNamespaceProfile.StartBashInNewNamespaces()
-
 	},
+}
+
+func startSh() {
+	cmd := exec.Command("/bin/sh")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	err := cmd.Run()
+	if err != nil {
+		return
+	}
+}
+
+var chrootCommand = &cobra.Command{
+	Use:   "chroot",
+	Short: "change the root for the binary.",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := syscall.Chroot("./rootfs")
+		if err != nil {
+			return
+		}
+		startSh()
+	},
+}
+
+func init() {
 }
 
 func main() {
@@ -61,9 +64,20 @@ func main() {
 		return
 	}
 
-	rootCmd.AddCommand(startCommand)
+	if len(os.Args) > 1 {
+		if os.Args[1] == "chroot" {
+			fmt.Println("chroot")
+			err := syscall.Chroot("./rootfs")
+			if err != nil {
+				fmt.Errorf("error changing root: %v", err)
+				return
+			}
 
-	rootCmd.AddCommand(isoBashCommand)
+		}
+	}
+
+	rootCmd.AddCommand(startCommand)
+	rootCmd.AddCommand(chrootCommand)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

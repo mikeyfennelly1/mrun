@@ -1,6 +1,7 @@
 package namespace
 
 import (
+	"encoding/json"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"golang.org/x/sys/unix"
 	"log"
@@ -19,12 +20,35 @@ type ProcNamespaceProfile struct {
 	Namespaces []specs.LinuxNamespace
 }
 
-func (p *ProcNamespaceProfile) StartBashInNewNamespaces() {
-	cmd := exec.Command("/bin/bash")
+func GetIsolatedProcessProfile() (*ProcNamespaceProfile, error) {
+	jsonNamespaces := `[
+			{ "type": "pid" },
+			{ "type": "network" },
+			{ "type": "ipc" },
+			{ "type": "uts" },
+			{ "type": "mount" },
+			{ "type": "cgroup" }
+		]`
+
+	var testNamespaces []specs.LinuxNamespace
+	err := json.Unmarshal([]byte(jsonNamespaces), &testNamespaces)
+	if err != nil {
+		return nil, err
+	}
+
+	var testNamespaceProfile ProcNamespaceProfile
+	testNamespaceProfile.Namespaces = testNamespaces
+	testNamespaceProfile.ProcessBinary = ""
+
+	return &testNamespaceProfile, nil
+}
+
+func (p *ProcNamespaceProfile) StartShellInNewNamespaces() {
+	cmd := exec.Command("/bin/sh")
 
 	// Set the command to run in a new mount namespace
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: p.getCloneFlagBitMask(),
+		Cloneflags: p.GetCloneFlagBitMask(),
 	}
 
 	// Set input/output to inherit from current process
@@ -38,7 +62,7 @@ func (p *ProcNamespaceProfile) StartBashInNewNamespaces() {
 	}
 }
 
-func (p *ProcNamespaceProfile) getCloneFlagBitMask() uintptr {
+func (p *ProcNamespaceProfile) GetCloneFlagBitMask() uintptr {
 	result := 0
 
 	for _, ns := range p.Namespaces {
@@ -67,8 +91,27 @@ func (p *ProcNamespaceProfile) getCloneFlagBitMask() uintptr {
 	return uintptr(result)
 }
 
-/**
-Containers should by default not control the terminal.
-To exec into a container is to start a bash in the current
-terminal session, that resides in the namespace of that container.
-*/
+func RestartInNewNS(args ...string) error {
+	p, err := GetIsolatedProcessProfile()
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("/proc/self/exe", args...)
+
+	// Set the command to run in a new mount namespace
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Cloneflags: p.GetCloneFlagBitMask(),
+	}
+
+	// Set input/output to inherit from current process
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Run the command
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}

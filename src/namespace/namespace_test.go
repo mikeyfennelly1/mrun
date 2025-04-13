@@ -57,7 +57,7 @@ func TestNSEnter(t *testing.T) {
 	testNamespaceProfile.Namespaces = testNamespaces
 	testNamespaceProfile.ProcessBinary = ""
 
-	testNamespaceProfile.StartBashInNewNamespaces()
+	testNamespaceProfile.StartShellInNewNamespaces()
 
 	require.NoError(t, err)
 }
