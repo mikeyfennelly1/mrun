@@ -6,7 +6,6 @@ import (
 	"golang.org/x/sys/unix"
 	"os"
 	"os/exec"
-	"syscall"
 )
 
 /**
@@ -19,11 +18,10 @@ Mount a /proc in that directory.
 */
 
 func CreateFileSystem(spec specs.Spec) error {
-	// change the root
-	err := syscall.Chroot(spec.Root.Path)
-	if err != nil {
-		return err
+	if os.Geteuid() != 0 {
+		fmt.Printf("not superuser\n")
 	}
+	fmt.Printf("EUID: %d\n", os.Geteuid())
 
 	// mount the god damn mounts
 	for index, mount := range spec.Mounts {

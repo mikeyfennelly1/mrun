@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
@@ -46,20 +49,36 @@ var chrootCommand = &cobra.Command{
 	Use:   "chroot",
 	Short: "change the root for the binary.",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := syscall.Chroot("./rootfs")
+		var spec specs.Spec
+		jsonContent, err := os.ReadFile("./config.json")
+		if err != nil {
+			fmt.Printf("error reading config: %v", err)
+			return
+		}
+		err = json.Unmarshal(jsonContent, &spec)
+		if err != nil {
+			fmt.Printf("error creating unmarshalling JSON: %v", err)
+			return
+		}
+
+		err = syscall.Chroot("./rootfs")
 		if err != nil {
 			return
 		}
 		err = os.Chdir("./rootfs")
 		if err != nil {
-			_ = fmt.Errorf("error changing directory to rootfs: %v", err)
+			fmt.Printf("error changing directory to rootfs: %v", err)
 			return
 		}
+
+		err = fs.CreateFileSystem(spec)
+		if err != nil {
+			fmt.Printf("error creating filesystem: %v", err)
+			return
+		}
+
 		startSh()
 	},
-}
-
-func init() {
 }
 
 func main() {
@@ -67,18 +86,6 @@ func main() {
 	if os.Geteuid() != 0 {
 		fmt.Println("You must be superuser to run this binary.")
 		return
-	}
-
-	if len(os.Args) > 1 {
-		if os.Args[1] == "chroot" {
-			fmt.Println("chroot")
-			err := syscall.Chroot("./rootfs")
-			if err != nil {
-				fmt.Errorf("error changing root: %v", err)
-				return
-			}
-
-		}
 	}
 
 	rootCmd.AddCommand(startCommand)
