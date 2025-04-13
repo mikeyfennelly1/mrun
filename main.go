@@ -50,6 +50,11 @@ var chrootCommand = &cobra.Command{
 		if err != nil {
 			return
 		}
+		err = os.Chdir("./rootfs")
+		if err != nil {
+			_ = fmt.Errorf("error changing directory to rootfs: %v", err)
+			return
+		}
 		startSh()
 	},
 }
