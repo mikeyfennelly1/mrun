@@ -1,4 +1,4 @@
-package capabilities
+package process
 
 func setCapabilities(pid int) {
 
