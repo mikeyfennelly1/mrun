@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/mikeyfennelly1/mrun/src/mount"
+	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
