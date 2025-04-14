@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/syndtr/gocapability/capability"
 	"os"
-	"os/exec"
 	"syscall"
 )
 
@@ -35,14 +34,14 @@ var startCommand = &cobra.Command{
 	},
 }
 
-func startSh() {
-	cmd := exec.Command("/bin/sh")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	err := cmd.Run()
+func execSh() {
+	shell := "/bin/sh"
+	args := []string{shell}
+	env := syscall.Environ()
+
+	err := syscall.Exec(shell, args, env)
 	if err != nil {
-		return
+		panic(err)
 	}
 }
 
@@ -74,7 +73,7 @@ var chrootCommand = &cobra.Command{
 
 		err = fs.CreateFileSystem(spec)
 
-		startSh()
+		execSh()
 	},
 }
 
