@@ -16,26 +16,6 @@ func setCapabilities(spec specs.Spec) {
 		thisCap := getCap(capStr)
 		procCaps.Set(capability.AMBIENT, thisCap)
 	}
-
-	for _, capStr := range spec.Process.Capabilities.Inheritable {
-		thisCap := getCap(capStr)
-		procCaps.Set(capability.INHERITABLE, thisCap)
-	}
-
-	for _, capStr := range spec.Process.Capabilities.Effective {
-		thisCap := getCap(capStr)
-		procCaps.Set(capability.EFFECTIVE, thisCap)
-	}
-
-	for _, capStr := range spec.Process.Capabilities.Bounding {
-		thisCap := getCap(capStr)
-		procCaps.Set(capability.BOUNDING, thisCap)
-	}
-
-	for _, capStr := range spec.Process.Capabilities.Permitted {
-		thisCap := getCap(capStr)
-		procCaps.Set(capability.PERMITTED, thisCap)
-	}
 }
 
 func getCap(which string) capability.Cap {
