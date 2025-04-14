@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
+	"github.com/syndtr/gocapability/capability"
 	"os"
 	"os/exec"
 	"syscall"
@@ -70,6 +72,8 @@ var chrootCommand = &cobra.Command{
 			return
 		}
 
+		err = fs.CreateFileSystem(spec)
+
 		startSh()
 	},
 }
@@ -79,6 +83,19 @@ func main() {
 	if os.Geteuid() != 0 {
 		fmt.Println("You must be superuser to run this binary.")
 		return
+	}
+
+	pid := os.Getpid()
+
+	caps, err := capability.NewPid(pid)
+	if err != nil {
+		panic(err)
+	}
+
+	caps.Set(capability.EFFECTIVE|capability.PERMITTED, capability.CAP_SYS_ADMIN)
+
+	if err := caps.Apply(capability.CAPS); err != nil {
+		panic(err)
 	}
 
 	rootCmd.AddCommand(startCommand)
