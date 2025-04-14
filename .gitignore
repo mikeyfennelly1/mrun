@@ -1,3 +1,5 @@
 .env
 .build-and-install.sh.swp
 /.idea
+/.vscode
+
