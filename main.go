@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
+	"github.com/mikeyfennelly1/mrun/src/process"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
 	"github.com/syndtr/gocapability/capability"
 	"os"
 	"syscall"
 )
-
-var rootfsPath string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -61,6 +60,11 @@ var chrootCommand = &cobra.Command{
 			return
 		}
 
+		err = process.SetCapabilities(spec)
+		if err != nil {
+			return
+		}
+
 		err = syscall.Chroot("./rootfs")
 		if err != nil {
 			return
@@ -86,7 +90,7 @@ func main() {
 
 	pid := os.Getpid()
 
-	caps, err := capability.NewPid(pid)
+	caps, err := capability.NewPid2(pid)
 	if err != nil {
 		panic(err)
 	}
