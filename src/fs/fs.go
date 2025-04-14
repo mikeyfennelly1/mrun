@@ -3,30 +3,22 @@ package fs
 import (
 	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/syndtr/gocapability/capability"
 	"golang.org/x/sys/unix"
 	"os"
-	"os/exec"
 )
-
-/**
-To create a container filesystem.
-
-Need to have a root dir.
-Mount a /proc in that directory.
-
-
-*/
 
 func CreateFileSystem(spec specs.Spec) error {
 	if os.Geteuid() != 0 {
 		fmt.Printf("not superuser\n")
 	}
-	fmt.Printf("EUID: %d\n", os.Geteuid())
 
 	// mount the god damn mounts
 	for index, mount := range spec.Mounts {
-		err := mountInContainerFS(spec.Root.Path, mount)
+		err := mountInContainerFS(mount)
 		if err != nil {
+			// should there be an error,
+			// iterate back through all mounted filesystems and unmount each
 			for i := index; i >= 0; i-- {
 				unix.Unmount(spec.Mounts[i].Destination, 0)
 			}
@@ -54,15 +46,18 @@ func maskPath(path string) error {
 	return nil
 }
 
-func mountInContainerFS(rootPath string, fileSystemToMount specs.Mount) error {
-	info, err := os.Stat(fileSystemToMount.Destination)
-	if info == nil {
+func mountInContainerFS(fileSystemToMount specs.Mount) error {
+	// check if the specified mount point exists
+	_, err := os.Stat(fileSystemToMount.Destination)
+	if os.IsNotExist(err) {
+		// if not, create the mount point
 		err = os.MkdirAll(fileSystemToMount.Destination, 0775)
 		if err != nil {
 			return err
 		}
 	}
 
+	// mount the filesystem to mount point (destination)
 	err = unix.Mount(fileSystemToMount.Source,
 		fileSystemToMount.Destination,
 		fileSystemToMount.Type,
@@ -70,14 +65,15 @@ func mountInContainerFS(rootPath string, fileSystemToMount specs.Mount) error {
 		"")
 
 	if err != nil {
-		if err.Error() == "device or resource busy" {
-			cmd := exec.Command("lsof", "+D", fileSystemToMount.Destination)
-			cmd.Stdout = os.Stdout
-			cmd.Run()
-			fmt.Printf("device or resource busy, lsof for file:")
-
+		fmt.Printf("%s: %v\n", fileSystemToMount.Destination, err)
+		caps, err := capability.NewPid(os.Getpid())
+		if err != nil {
+			panic(err)
 		}
-		return fmt.Errorf("%s: %v", fileSystemToMount.Destination, err)
+
+		fmt.Printf("%s\n", caps.String())
+
+		return err
 	}
 
 	return nil
