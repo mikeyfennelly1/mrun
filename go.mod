@@ -6,6 +6,7 @@ require (
 	github.com/opencontainers/runtime-spec v1.2.1
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
+	github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635
 	golang.org/x/sys v0.1.0
 )
 
