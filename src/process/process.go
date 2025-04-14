@@ -1,21 +1,42 @@
 package process
 
 import (
+	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/syndtr/gocapability/capability"
 	"os"
 )
 
-func setCapabilities(spec specs.Spec) {
-	procCaps, err := capability.NewPid2(os.Getpid())
+func SetCapabilities(spec specs.Spec) error {
+	pid := os.Getpid()
+	procCaps, err := capability.NewPid2(pid)
 	if err != nil {
-		return
+		fmt.Printf("error getting process capabilities: %v\n", err)
+		return err
 	}
+	err = procCaps.Load()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("AMBIENT BEFORE SETCAPS----> %s\n", procCaps.StringCap(capability.AMBIENT))
 
 	for _, capStr := range spec.Process.Capabilities.Ambient {
 		thisCap := getCap(capStr)
 		procCaps.Set(capability.AMBIENT, thisCap)
 	}
+
+	err = procCaps.Apply(capability.CAPS)
+	if err != nil {
+		return err
+	}
+
+	err = procCaps.Load()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("AMBIENT AFTER SETCAPS----> %s\n", procCaps.StringCap(capability.AMBIENT))
+
+	return nil
 }
 
 func getCap(which string) capability.Cap {
