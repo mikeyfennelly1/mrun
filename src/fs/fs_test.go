@@ -80,10 +80,6 @@ func TestCreateFileSystem(t *testing.T) {
 	err = json.Unmarshal(jsonContent, &spec)
 	require.NoError(t, err)
 
-	// could be worthwhile to start a new bash in a process namespace
-	// and see how we can remove mounts that may cause conflicts
-	// with mount operations in new mount namespace
-
 	// change root and mount new filesystems
 	err = CreateFileSystem(spec)
 	require.NoError(t, err)
