@@ -7,6 +7,7 @@ import (
 	"github.com/mikeyfennelly1/mrun/src/mruncaps"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
 	"github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/syndtr/gocapability/capability"
 	"os"
@@ -48,7 +49,8 @@ var startCommand = &cobra.Command{
 
 		err = namespace.RestartInNewNS("chroot")
 		if err != nil {
-			return
+			logrus.Fatalf("unable to enter new namesapces")
+			logrus.Exit(1)
 		}
 	},
 }
@@ -88,6 +90,17 @@ var chrootCommand = &cobra.Command{
 		if err != nil {
 			fmt.Printf("error changing directory to rootfs: %v", err)
 			return
+		}
+
+		uid := int(spec.Process.User.UID)
+		gid := int(spec.Process.User.GID)
+		err = syscall.Setuid(uid)
+		if err != nil {
+			logrus.Warn("unable to set uid of process in container to %d\n", uid)
+		}
+		err = syscall.Setgid(gid)
+		if err != nil {
+			logrus.Warn("unable to set gid of process in container to %d\n", uid)
 		}
 
 		err = fs.CreateFileSystem(spec)
