@@ -36,6 +36,15 @@ func setAndApplyCapsetToFile(capset capability.CapType, capsetCaps []string, fil
 	panic("Implement setAndApplyCapsetToFile")
 }
 
+func SetAndApplyCapsetToCurrentPid(capabilitySet capability.CapType, capabilities []string) {
+	for _, thisCap := range capabilities {
+		err := SetAndApplyCapToCurrentPid(capabilitySet, getCap(thisCap))
+		if err != nil {
+			logrus.Warn(err)
+		}
+	}
+}
+
 func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capability.Cap) error {
 	pid := os.Getpid()
 	procCaps, err := capability.NewPid2(pid)
@@ -52,7 +61,7 @@ func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capabili
 
 	err = procCaps.Apply(capability.CAPS)
 	if err != nil {
-		fmt.Printf("error applying capability '%v': %v\n", which, err)
+		fmt.Printf("error applying capability '%v' to the %v capability set: %v\n", which, capabilitySet, err)
 		return err
 	}
 
