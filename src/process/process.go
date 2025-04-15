@@ -3,11 +3,26 @@ package process
 import (
 	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/sirupsen/logrus"
 	"github.com/syndtr/gocapability/capability"
 	"os"
 )
 
 func SetCapabilities(spec specs.Spec) error {
+	for _, thisCap := range spec.Process.Capabilities.Ambient {
+		err := setAndApplyCap(capability.AMBIENT, getCap(thisCap))
+		if err != nil {
+			fmt.Printf("can't set capability '%s': %v\n", thisCap, err)
+			os.Exit(1)
+		}
+	}
+
+	_ = printStatus()
+
+	return nil
+}
+
+func setAndApplyCap(capabilitySet capability.CapType, which capability.Cap) error {
 	pid := os.Getpid()
 	procCaps, err := capability.NewPid2(pid)
 	if err != nil {
@@ -18,23 +33,26 @@ func SetCapabilities(spec specs.Spec) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("AMBIENT BEFORE SETCAPS----> %s\n", procCaps.StringCap(capability.AMBIENT))
 
-	for _, capStr := range spec.Process.Capabilities.Ambient {
-		thisCap := getCap(capStr)
-		procCaps.Set(capability.AMBIENT, thisCap)
-	}
+	procCaps.Set(capabilitySet, which)
 
 	err = procCaps.Apply(capability.CAPS)
 	if err != nil {
+		fmt.Printf("error applying capability: %v\n", err)
 		return err
 	}
 
-	err = procCaps.Load()
+	return nil
+}
+
+func printStatus() error {
+	filename := fmt.Sprintf("/proc/%d/status", os.Getpid())
+	contents, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("AMBIENT AFTER SETCAPS----> %s\n", procCaps.StringCap(capability.AMBIENT))
+
+	fmt.Printf("/proc/pid/status: %s\n\n", string(contents))
 
 	return nil
 }
@@ -124,6 +142,11 @@ func getCap(which string) capability.Cap {
 	case "CAP_WAKE_ALARM":
 		return capability.CAP_WAKE_ALARM
 	default:
+		// log an error
+		err := fmt.Errorf("unknown value capability value, given: %s", which)
+		logrus.Warn("%v", err)
+
+		// return 0 to have no resulting bitmask effects
 		return 0
 	}
 }
