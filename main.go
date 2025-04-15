@@ -8,6 +8,7 @@ import (
 	"github.com/mikeyfennelly1/mrun/src/namespace"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
+	"github.com/syndtr/gocapability/capability"
 	"os"
 	"syscall"
 )
@@ -37,7 +38,13 @@ var startCommand = &cobra.Command{
 			return
 		}
 
-		_ = mruncaps.PrintCapabilityStatus()
+		mruncaps.SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
+
+		mruncaps.SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
+
+		mruncaps.SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
+
+		mruncaps.SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
 
 		err = namespace.RestartInNewNS("chroot")
 		if err != nil {
