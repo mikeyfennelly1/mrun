@@ -8,7 +8,6 @@ import (
 	"github.com/mikeyfennelly1/mrun/src/process"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
-	"github.com/syndtr/gocapability/capability"
 	"os"
 	"syscall"
 )
@@ -26,7 +25,23 @@ var startCommand = &cobra.Command{
 	Use:   "start",
 	Short: "Start an isolated environment.",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := namespace.RestartInNewNS("chroot")
+		var spec specs.Spec
+		jsonContent, err := os.ReadFile("./config.json")
+		if err != nil {
+			fmt.Printf("error reading config: %v", err)
+			return
+		}
+		err = json.Unmarshal(jsonContent, &spec)
+		if err != nil {
+			fmt.Printf("error creating unmarshalling JSON: %v", err)
+			return
+		}
+
+		err = process.SetCapabilities(spec)
+		if err != nil {
+			return
+		}
+		err = namespace.RestartInNewNS("chroot")
 		if err != nil {
 			return
 		}
@@ -40,7 +55,7 @@ func execSh() {
 
 	err := syscall.Exec(shell, args, env)
 	if err != nil {
-		panic(err)
+		fmt.Printf("error execing shell: %v\n", err)
 	}
 }
 
@@ -57,11 +72,6 @@ var chrootCommand = &cobra.Command{
 		err = json.Unmarshal(jsonContent, &spec)
 		if err != nil {
 			fmt.Printf("error creating unmarshalling JSON: %v", err)
-			return
-		}
-
-		err = process.SetCapabilities(spec)
-		if err != nil {
 			return
 		}
 
@@ -82,25 +92,6 @@ var chrootCommand = &cobra.Command{
 }
 
 func main() {
-	// ensure that binary is running with root permissions before running
-	if os.Geteuid() != 0 {
-		fmt.Println("You must be superuser to run this binary.")
-		return
-	}
-
-	pid := os.Getpid()
-
-	caps, err := capability.NewPid2(pid)
-	if err != nil {
-		panic(err)
-	}
-
-	caps.Set(capability.EFFECTIVE|capability.PERMITTED, capability.CAP_SYS_ADMIN)
-
-	if err := caps.Apply(capability.CAPS); err != nil {
-		panic(err)
-	}
-
 	rootCmd.AddCommand(startCommand)
 	rootCmd.AddCommand(chrootCommand)
 
