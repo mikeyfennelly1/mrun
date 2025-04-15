@@ -3,7 +3,6 @@ package fs
 import (
 	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
-	"github.com/syndtr/gocapability/capability"
 	"golang.org/x/sys/unix"
 	"os"
 )
@@ -65,14 +64,6 @@ func mountInContainerFS(fileSystemToMount specs.Mount) error {
 		"")
 
 	if err != nil {
-		fmt.Printf("%s: %v\n", fileSystemToMount.Destination, err)
-		caps, err := capability.NewPid(os.Getpid())
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("%s\n", caps.String())
-
 		return err
 	}
 
