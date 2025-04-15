@@ -11,6 +11,9 @@ mrunBinaryPath="/usr/bin/mrun"
 go build -o ${mrunBinaryPath}
 sudo chown 0:0 ${mrunBinaryPath}
 sudo chmod +s ${mrunBinaryPath}
-sudo setcap cap_setpcap=ep ${mrunBinaryPath}
+
+sudo setcap cap_sys_admin,cap_audit_write=ep ${mrunBinaryPath}
+
+
 alias mrun="${mrunBinaryPath}"
 source ~/.zshrc

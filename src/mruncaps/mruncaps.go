@@ -1,4 +1,4 @@
-package process
+package mruncaps
 
 import (
 	"fmt"
@@ -8,21 +8,35 @@ import (
 	"os"
 )
 
-func SetCapabilities(spec specs.Spec) error {
-	for _, thisCap := range spec.Process.Capabilities.Ambient {
-		err := setAndApplyCap(capability.AMBIENT, getCap(thisCap))
-		if err != nil {
-			fmt.Printf("can't set capability '%s': %v\n", thisCap, err)
-			os.Exit(1)
-		}
-	}
+// SetFileCapabilities for the binary for the init process of
+// the container. This requires usage of a file system that
+// supports extended file attributes.
+//
+// https://man7.org/linux/man-pages/man7/xattr.7.html
+func SetFileCapabilities(spec specs.Spec, filename string) error {
+	// apply permitted capabilities to /bin/sh
+	setAndApplyCapsetToFile(capability.PERMITTED,
+		spec.Process.Capabilities.Permitted,
+		filename)
 
-	_ = printStatus()
+	// apply permitted inheritable to /bin/sh
+	setAndApplyCapsetToFile(capability.INHERITABLE,
+		spec.Process.Capabilities.Inheritable,
+		filename)
+
+	// apply effective inheritable to /bin/sh
+	setAndApplyCapsetToFile(capability.EFFECTIVE,
+		spec.Process.Capabilities.Permitted,
+		filename)
 
 	return nil
 }
 
-func setAndApplyCap(capabilitySet capability.CapType, which capability.Cap) error {
+func setAndApplyCapsetToFile(capset capability.CapType, capsetCaps []string, file string) {
+	panic("Implement setAndApplyCapsetToFile")
+}
+
+func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capability.Cap) error {
 	pid := os.Getpid()
 	procCaps, err := capability.NewPid2(pid)
 	if err != nil {
@@ -38,14 +52,14 @@ func setAndApplyCap(capabilitySet capability.CapType, which capability.Cap) erro
 
 	err = procCaps.Apply(capability.CAPS)
 	if err != nil {
-		fmt.Printf("error applying capability: %v\n", err)
+		fmt.Printf("error applying capability '%v': %v\n", which, err)
 		return err
 	}
 
 	return nil
 }
 
-func printStatus() error {
+func PrintCapabilityStatus() error {
 	filename := fmt.Sprintf("/proc/%d/status", os.Getpid())
 	contents, err := os.ReadFile(filename)
 	if err != nil {

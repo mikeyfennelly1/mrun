@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mikeyfennelly1/mrun/src/fs"
+	"github.com/mikeyfennelly1/mrun/src/mruncaps"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
-	"github.com/mikeyfennelly1/mrun/src/process"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
 	"os"
@@ -37,10 +37,8 @@ var startCommand = &cobra.Command{
 			return
 		}
 
-		err = process.SetCapabilities(spec)
-		if err != nil {
-			return
-		}
+		_ = mruncaps.PrintCapabilityStatus()
+
 		err = namespace.RestartInNewNS("chroot")
 		if err != nil {
 			return
