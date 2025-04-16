@@ -10,6 +10,42 @@ mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtim
 This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
 ====
 
+== How to start a container with mrun
+
+To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
+
+[NOTE]
+I recommend that you use an https://alpinelinux.org/[Alpine Linux filesystem].
+
+When you are ready to run an mrun container, your current working directory in your filesystem should look like this:
+
+[source, bash]
+----
+mrun-test
+├── config.json
+└── rootfs
+    ├── bin
+    ├── dev
+    ├── etc
+    ├── home
+    ├── lib
+    ├── media
+    ├── mnt
+    ├── newproc
+    ├── opt
+    ├── proc
+    ├── root
+    ├── run
+    ├── sbin
+    ├── srv
+    ├── sys
+    ├── tmp
+    ├── usr
+    └── var
+----
+
+Now run `mrun start`, and your default configurations should start a bash process in the container.
+
 === Original Goals of this project
 
 Originally this project was created as a way to learn Linux and container technology. It ended up requiring a lot of research, hence the long pauses in development during the period of creating mrun.
