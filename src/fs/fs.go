@@ -3,6 +3,7 @@ package fs
 import (
 	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/sys/unix"
 	"os"
 )
@@ -96,4 +97,22 @@ func getBitMaskForMountOptions(mountOptions []string) uintptr {
 		}
 	}
 	return result
+}
+
+func MaskPaths(paths []string) {
+	for _, path := range paths {
+		err := unix.Mount("tmpfs", path, "tmpfs", 0, "")
+		if err != nil {
+			logrus.Warn(err)
+		}
+	}
+}
+
+func ReadOnlyPaths(paths []string) {
+	for _, path := range paths {
+		err := os.Chmod(path, 0555)
+		if err != nil {
+			logrus.Warn(err)
+		}
+	}
 }
