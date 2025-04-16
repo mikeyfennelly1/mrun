@@ -103,6 +103,8 @@ var chrootCommand = &cobra.Command{
 			logrus.Warn("unable to set gid of process in container to %d\n", uid)
 		}
 
+		proc.SetRLIMITsForProcess(spec.Process.Rlimits)
+
 		err = syscall.Sethostname([]byte(spec.Hostname))
 		if err != nil {
 			logrus.Warn(err)
