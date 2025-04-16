@@ -103,6 +103,11 @@ var chrootCommand = &cobra.Command{
 			logrus.Warn("unable to set gid of process in container to %d\n", uid)
 		}
 
+		err = syscall.Sethostname([]byte(spec.Hostname))
+		if err != nil {
+			logrus.Warn(err)
+		}
+
 		err = fs.CreateFileSystem(spec)
 
 		execSh()
