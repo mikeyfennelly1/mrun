@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mikeyfennelly1/mrun/src/fs"
-	"github.com/mikeyfennelly1/mrun/src/mruncaps"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
+	"github.com/mikeyfennelly1/mrun/src/proc"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -39,13 +39,13 @@ var startCommand = &cobra.Command{
 			return
 		}
 
-		mruncaps.SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
+		proc.SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
 
-		mruncaps.SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
+		proc.SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
 
-		mruncaps.SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
+		proc.SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
 
-		mruncaps.SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
+		proc.SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
 
 		err = namespace.RestartInNewNS("chroot")
 		if err != nil {
