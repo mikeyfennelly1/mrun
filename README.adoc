@@ -10,6 +10,12 @@ mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtim
 This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
 ====
 
+== System prerequisites for using mrun
+
+My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
+
+systemd, a filesystem that supports extended attributes and a Kernel newer than v4.5 - to have cgroupv2 support. If you are currently running Linux, this configuration is more than likely already the case for your setup, but just to make note of these in case of unexpected behaviors.
+
 == How to start a container with mrun
 
 To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
