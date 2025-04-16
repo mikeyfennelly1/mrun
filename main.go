@@ -105,6 +105,8 @@ var chrootCommand = &cobra.Command{
 
 		proc.SetRLIMITsForProcess(spec.Process.Rlimits)
 
+		proc.SetEnvVars(spec.Process.Env)
+
 		err = syscall.Sethostname([]byte(spec.Hostname))
 		if err != nil {
 			logrus.Warn(err)
