@@ -1,0 +1,346 @@
+= containerd cgroupv2 package
+:toc:
+
+https://github.com/containerd/cgroups[Repo for the package.]
+
+== Overview
+
+== Files (high level parts of the package)
+
+== High level overview
+
+=== Package level methods
+
+==== cgroupv2.Load
+
+[source, go]
+----
+func Load(group string, opts ...InitOpts) (*Manager, error)
+----
+
+Given the path to the control `group`, and initialization options `InitOpts` this function returns a pointer to a `Manager` struct.
+
+==== cgroupv2.LoadSystemd
+[source, go]
+----
+func LoadSystemd(slice, group string) (*Manager, error)
+----
+
+==== cgroupv2.LoadAttachCgroupDeviceFilter
+[source, go]
+----
+func LoadAttachCgroupDeviceFilter(insts asm.Instructions, license string, dirFD int)
+----
+
+==== cgroupv2.NestedGroupPath
+[source, go]
+----
+func NestedGroupPath(suffix string) (string, error)
+----
+
+==== cgroupv2.NewCPUMax
+[source, go]
+----
+func NewCPUMax(quota *int64, period *uint64) CPUMax
+----
+
+==== cgroupv2.NewManager
+[source, go]
+----
+func NewManager(mountpoint string, group string, resources *Resources)
+----
+
+==== cgroupv2.NewSystemd
+[source, go]
+----
+func NewSystemd(slice, group string, pid int, resources *Resources) (*Manager, error)
+----
+
+==== cgroupv2.PidGroupPath
+[source, go]
+----
+func PidGroupPath(pid int) (string, error)
+----
+
+==== cgroupv2.ToResources
+[source, go]
+----
+func ToResources(spec *specs.LinuxResources) *Resources
+----
+
+==== cgroupv2.VerifyGroupPath
+[source, go]
+----
+func VerifyGroupPath(g string) error
+----
+
+==== cgroupv2.WithMountpoint
+[source, go]
+----
+func WithMountpoint(path string) InitOpts
+----
+
+=== Important Types
+==== Event
+[source, go]
+----
+type Event struct {
+	Low     uint64
+	High    uint64
+	Max     uint64
+	OOM     uint64
+	OOMKill uint64
+}
+----
+
+==== Resources
+[source, go]
+----
+// Resources for a cgroups v2 unified hierarchy
+type Resources struct {
+	CPU     *CPU
+	Memory  *Memory
+	Pids    *Pids
+	IO      *IO
+	RDMA    *RDMA
+	HugeTlb *HugeTlb
+	// When len(Devices) is zero, devices are not controlled
+	Devices []specs.LinuxDeviceCgroup
+}
+----
+
+==== Value
+[source, go]
+----
+// Value of a cgroup setting
+type Value struct {
+	filename string
+	value    interface{}
+}
+----
+
+==== BFQ
+[source, go]
+----
+type BFQ struct {
+	Weight uint16
+}
+----
+
+==== CPU
+[source, go]
+----
+type CPU struct {
+	Weight *uint64
+	Max    CPUMax
+	Cpus   string
+	Mems   string
+}
+----
+
+==== Entry
+[source, go]
+----
+type Entry struct {
+	Type  IOType
+	Major int64
+	Minor int64
+	Rate  uint64
+}
+----
+
+==== HugeTlb
+[source, go]
+----
+type HugeTlb []HugeTlbEntry
+----
+
+==== HugeTlbEntry
+[source, go]
+----
+type HugeTlbEntry struct {
+	HugePageSize string
+	Limit        uint64
+}
+----
+
+==== IO
+[source, go]
+----
+type IO struct {
+	BFQ BFQ
+	Max []Entry
+}
+----
+
+==== Memory
+[source, go]
+----
+type Memory struct {
+	Swap *int64
+	Min  *int64
+	Max  *int64
+	Low  *int64
+	High *int64
+}
+----
+
+==== Pids
+[source, go]
+----
+type Pids struct {
+	Max int64
+}
+----
+
+==== RDMA
+[source, go]
+----
+type RDMA struct {
+	Limit []RDMAEntry
+}
+----
+
+==== RDMAEntry
+[source, go]
+----
+type RDMAEntry struct {
+	Device     string
+	HcaHandles uint32
+	HcaObjects uint32
+}
+----
+
+==== CgroupType
+[source, go]
+----
+// CgroupType represents the types a cgroup can be.
+type CgroupType string
+
+const (
+	Domain         CgroupType = "domain"
+	DomainThreaded CgroupType = "domain threaded"
+	DomainInvalid  CgroupType = "domain invalid"
+	Threaded       CgroupType = "threaded"
+)
+----
+
+==== ControllerToggle
+[source, go]
+----
+type ControllerToggle int
+
+const (
+	Enable ControllerToggle = iota + 1
+	Disable
+)
+----
+
+==== CPUMax
+[source, go]
+----
+type CPUMax string
+----
+
+==== IOType
+[source, go]
+----
+type IOType string
+
+const (
+	ReadBPS   IOType = "rbps"
+	WriteBPS  IOType = "wbps"
+	ReadIOPS  IOType = "riops"
+	WriteIOPS IOType = "wiops"
+)
+----
+
+==== InitOpts
+[source, go]
+----
+type InitOpts func(c *InitConfig) error
+----
+
+==== State
+[source, go]
+----
+// State is a type that represents the state of the current cgroup
+type State string
+
+const (
+    Unknown State = ""
+    Thawed  State = "thawed"
+    Frozen  State = "frozen"
+    Deleted State = "deleted"
+
+    cgroupFreeze = "cgroup.freeze"
+)
+----
+
+==== Manager
+
+[source, go]
+----
+type Manager struct {
+    unifiedMountpoint string
+    path              string
+}
+----
+
+==== ControllerToggle
+[source, go]
+----
+type ControllerToggle int
+
+const (
+    Enable ControllerToggle = iota + 1
+    Disable
+)
+----
+
+
+==== CgroupType
+
+[source, go]
+----
+// CgroupType represents the types a cgroup can be.
+type CgroupType string
+
+const (
+    Domain         CgroupType = "domain"
+    DomainThreaded CgroupType = "domain threaded"
+    DomainInvalid  CgroupType = "domain invalid"
+    Threaded       CgroupType = "threaded"
+)
+----
+
+==== InitConfig
+[source, go]
+----
+type InitConfig struct {
+	mountpoint string
+}
+----
+
+==== InitOpts
+
+[source, go]
+----
+type InitOpts func(c *InitConfig) error
+----
+
+==== IOType
+
+[source, go]
+----
+type IOType string
+
+const (
+	ReadBPS   IOType = "rbps"
+	WriteBPS  IOType = "wbps"
+	ReadIOPS  IOType = "riops"
+	WriteIOPS IOType = "wiops"
+)
+----
+
+== manager.go
