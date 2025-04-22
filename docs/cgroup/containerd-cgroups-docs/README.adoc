@@ -7,11 +7,9 @@ https://github.com/containerd/cgroups[Repo for the package.]
 
 == Files (high level parts of the package)
 
-== High level overview
+== Package level methods
 
-=== Package level methods
-
-==== cgroupv2.Load
+=== cgroupv2.Load
 
 [source, go]
 ----
@@ -20,68 +18,69 @@ func Load(group string, opts ...InitOpts) (*Manager, error)
 
 Given the path to the control `group`, and initialization options `InitOpts` this function returns a pointer to a `Manager` struct.
 
-==== cgroupv2.LoadSystemd
+=== cgroupv2.LoadSystemd
 [source, go]
 ----
 func LoadSystemd(slice, group string) (*Manager, error)
 ----
 
-==== cgroupv2.LoadAttachCgroupDeviceFilter
+=== cgroupv2.LoadAttachCgroupDeviceFilter
 [source, go]
 ----
 func LoadAttachCgroupDeviceFilter(insts asm.Instructions, license string, dirFD int)
 ----
 
-==== cgroupv2.NestedGroupPath
+=== cgroupv2.NestedGroupPath
 [source, go]
 ----
 func NestedGroupPath(suffix string) (string, error)
 ----
 
-==== cgroupv2.NewCPUMax
+=== cgroupv2.NewCPUMax
 [source, go]
 ----
 func NewCPUMax(quota *int64, period *uint64) CPUMax
 ----
 
-==== cgroupv2.NewManager
+=== cgroupv2.NewManager
 [source, go]
 ----
 func NewManager(mountpoint string, group string, resources *Resources)
 ----
 
-==== cgroupv2.NewSystemd
+=== cgroupv2.NewSystemd
 [source, go]
 ----
 func NewSystemd(slice, group string, pid int, resources *Resources) (*Manager, error)
 ----
 
-==== cgroupv2.PidGroupPath
+=== cgroupv2.PidGroupPath
 [source, go]
 ----
 func PidGroupPath(pid int) (string, error)
 ----
 
-==== cgroupv2.ToResources
+=== cgroupv2.ToResources
 [source, go]
 ----
 func ToResources(spec *specs.LinuxResources) *Resources
 ----
 
-==== cgroupv2.VerifyGroupPath
+=== cgroupv2.VerifyGroupPath
 [source, go]
 ----
 func VerifyGroupPath(g string) error
 ----
 
-==== cgroupv2.WithMountpoint
+=== cgroupv2.WithMountpoint
 [source, go]
 ----
 func WithMountpoint(path string) InitOpts
 ----
 
-=== Important Types
-==== Event
+== Types
+
+=== Event
 [source, go]
 ----
 type Event struct {
@@ -93,7 +92,7 @@ type Event struct {
 }
 ----
 
-==== Resources
+=== Resources
 [source, go]
 ----
 // Resources for a cgroups v2 unified hierarchy
@@ -109,7 +108,7 @@ type Resources struct {
 }
 ----
 
-==== Value
+=== Value
 [source, go]
 ----
 // Value of a cgroup setting
@@ -119,7 +118,7 @@ type Value struct {
 }
 ----
 
-==== BFQ
+=== BFQ
 [source, go]
 ----
 type BFQ struct {
@@ -127,7 +126,7 @@ type BFQ struct {
 }
 ----
 
-==== CPU
+=== CPU
 [source, go]
 ----
 type CPU struct {
@@ -138,7 +137,7 @@ type CPU struct {
 }
 ----
 
-==== Entry
+=== Entry
 [source, go]
 ----
 type Entry struct {
@@ -149,13 +148,13 @@ type Entry struct {
 }
 ----
 
-==== HugeTlb
+=== HugeTlb
 [source, go]
 ----
 type HugeTlb []HugeTlbEntry
 ----
 
-==== HugeTlbEntry
+=== HugeTlbEntry
 [source, go]
 ----
 type HugeTlbEntry struct {
@@ -164,7 +163,7 @@ type HugeTlbEntry struct {
 }
 ----
 
-==== IO
+=== IO
 [source, go]
 ----
 type IO struct {
@@ -173,7 +172,7 @@ type IO struct {
 }
 ----
 
-==== Memory
+=== Memory
 [source, go]
 ----
 type Memory struct {
@@ -185,7 +184,7 @@ type Memory struct {
 }
 ----
 
-==== Pids
+=== Pids
 [source, go]
 ----
 type Pids struct {
@@ -193,7 +192,7 @@ type Pids struct {
 }
 ----
 
-==== RDMA
+=== RDMA
 [source, go]
 ----
 type RDMA struct {
@@ -201,7 +200,7 @@ type RDMA struct {
 }
 ----
 
-==== RDMAEntry
+=== RDMAEntry
 [source, go]
 ----
 type RDMAEntry struct {
@@ -211,7 +210,7 @@ type RDMAEntry struct {
 }
 ----
 
-==== CgroupType
+=== CgroupType
 [source, go]
 ----
 // CgroupType represents the types a cgroup can be.
@@ -225,7 +224,7 @@ const (
 )
 ----
 
-==== ControllerToggle
+=== ControllerToggle
 [source, go]
 ----
 type ControllerToggle int
@@ -236,13 +235,13 @@ const (
 )
 ----
 
-==== CPUMax
+=== CPUMax
 [source, go]
 ----
 type CPUMax string
 ----
 
-==== IOType
+=== IOType
 [source, go]
 ----
 type IOType string
@@ -255,13 +254,13 @@ const (
 )
 ----
 
-==== InitOpts
+=== InitOpts
 [source, go]
 ----
 type InitOpts func(c *InitConfig) error
 ----
 
-==== State
+=== State
 [source, go]
 ----
 // State is a type that represents the state of the current cgroup
@@ -277,7 +276,7 @@ const (
 )
 ----
 
-==== Manager
+=== Manager
 
 [source, go]
 ----
@@ -287,7 +286,7 @@ type Manager struct {
 }
 ----
 
-==== ControllerToggle
+=== ControllerToggle
 [source, go]
 ----
 type ControllerToggle int
@@ -299,7 +298,7 @@ const (
 ----
 
 
-==== CgroupType
+=== CgroupType
 
 [source, go]
 ----
@@ -314,7 +313,7 @@ const (
 )
 ----
 
-==== InitConfig
+=== InitConfig
 [source, go]
 ----
 type InitConfig struct {
@@ -322,14 +321,14 @@ type InitConfig struct {
 }
 ----
 
-==== InitOpts
+=== InitOpts
 
 [source, go]
 ----
 type InitOpts func(c *InitConfig) error
 ----
 
-==== IOType
+=== IOType
 
 [source, go]
 ----
