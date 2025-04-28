@@ -79,6 +79,19 @@ func WithMountpoint(path string) InitOpts
 == Types
 
 === Event
+
+Events are like notifications for when something occurs in a control group. There are files in the cgroup interface like
+
+- `cgroup.events`
+- `memory.events`
+- `memory.events.local`
+- `memory.swap.events`
+- `pids.events`
+- `pids.events.local`
+- `hugetlb.<hugepagesize>.events.local`
+- `misc.events`
+- `misc.events.local`
+
 [source, go]
 ----
 type Event struct {
@@ -90,7 +103,11 @@ type Event struct {
 }
 ----
 
+[[Resources]]
 === Resources
+
+This object represents resources in a control group. It contains pointers to objects like <<CPU, CPU>>, <<Memory, Memory>>, <<Pids, Pids>>, <<IO, IO>>, <<RDMA, RDMA>>, <<HugeTlb, HugeTlb>>, link:[LinuxDeviceCgroup]
+
 [source, go]
 ----
 // Resources for a cgroups v2 unified hierarchy
@@ -125,6 +142,9 @@ type BFQ struct {
 ----
 
 === CPU
+
+This represents the CPU controller, which is a _threaded controller_.
+
 [source, go]
 ----
 type CPU struct {
@@ -208,7 +228,16 @@ type RDMAEntry struct {
 }
 ----
 
+[[CgroupType]]
 === CgroupType
+
+Represents the type of a control group. It is linked to the link:https://docs.kernel.org/admin-guide/cgroup-v2.html#core-interface-files[Core Interface File] `cgroup.type` file in the v2 heirarchy.
+
+*Relevant Methods*:
+
+- <<GetType, Manager.GetType>>
+- <<SetType, Manager.SetType>>
+
 [source, go]
 ----
 // CgroupType represents the types a cgroup can be.
@@ -234,12 +263,36 @@ const (
 ----
 
 === CPUMax
+
+The maximum CPU bandwidth limit for a cgroup.
+
+CPUMax represents the cpu.max file in a control group. This is a two value file which is only in non-root cgroups. The default is "max 100000".
+
+Two value file `cpu.max` is in this format:
+
+----
+$MAX $PERIOD
+----
+
+Each value can be set to either "max" - indicating no limit, or an unsigned integer value.
+
+
 [source, go]
 ----
 type CPUMax string
 ----
 
 === IOType
+
+Since the I/O controller is
+
+This IOType is returned by functions...
+
+Terminology:
+
+- *BPS*: Bytes Per Second
+- *IOPS*: I/O Operations Per Second
+
 [source, go]
 ----
 type IOType string
@@ -259,6 +312,25 @@ type InitOpts func(c *InitConfig) error
 ----
 
 === State
+
+==== deleted
+
+State represents the current state of the cgroup.
+
+A cgroup can appear in a "deleted state" when it is being deleted. A cgroup can not be immediately deleted in the kernel because some processes in the cgroup may still have open file descriptors. When it is in the deleted state it is essentially _being deleted_ per se in kernel space.
+
+When you remove a cgroup with `rmdir` (on the cgroup directory) the kernel marks the cgroup for deletion. It remains there until all references to it are gone. If a cgroup is in a deleted state it is essentially pending cleanup.
+
+==== frozen/thawed
+
+Freezing a cgroup essentially suspends all processes in that cgroup. Thawing a cgroup resumes all the processes that were suspended. It is like pause/play on processes in a cgroup.
+
+What a suspended process is is out of the scope of this documentation, but briefly, a suspended process stops running and does not consume CPU cycles.
+
+No new processes are allowed spawn until cgroup is thawed.
+
+When a cgroup is thawed all processes resume exactly where they left off.
+
 [source, go]
 ----
 // State is a type that represents the state of the current cgroup
@@ -344,8 +416,7 @@ const (
 
 The manager struct seems to be the most comprehensive API in the cgroupv2 package. Here are some of the methods on it:
 
-
-
+[[GetType]]
 === GetType
 
 [source,go]
@@ -353,125 +424,139 @@ The manager struct seems to be the most comprehensive API in the cgroupv2 packag
 func (c *Manager) GetType() (CgroupType, error)
 ----
 
+Gets the type of control group that the manager object represents. Returns a <<CgroupType, CgroupType>> and an error.
+
+=== SetType
+
+Set the type of a control group, using a <<CgroupType, CgroupType>>.
+
 [source,go]
 ----
 func (c *Manager) SetType(cgType CgroupType) error
 ----
 
+=== RootControllers
 [source,go]
 ----
 func (c *Manager) RootControllers() ([]string, error)
 ----
 
+=== Controllers
 [source,go]
 ----
 func (c *Manager) Controllers() ([]string, error)
 ----
+
+=== Update
+
+Takes a <<Resources,Resources>> object.
 
 [source,go]
 ----
 func (c *Manager) Update(resources *Resources) error
 ----
 
+=== ToggleControllers
+
+Toggle the value of a controller in a cgroup using a <<ControllerToggle, ControllerToggle>> type.
+
 [source,go]
 ----
 func (c *Manager) ToggleControllers(controllers []string, t ControllerToggle) error
 ----
 
-[source,go]
-----
-func (c *Manager) writeSubtreeControl(filePath string, controllers []string, t ControllerToggle) error
-----
+=== NewChild
 
 [source,go]
 ----
 func (c *Manager) NewChild(name string, resources *Resources) (*Manager, error)
 ----
 
+=== AddProc
+
 [source,go]
 ----
 func (c *Manager) AddProc(pid uint64) error
 ----
+
+=== AddThread
 
 [source,go]
 ----
 func (c *Manager) AddThread(tid uint64) error
 ----
 
+=== Kill
+
 [source,go]
 ----
 func (c *Manager) Kill() error
 ----
 
-[source,go]
-----
-func (c *Manager) fallbackKill() error
-----
+=== Delete
 
 [source,go]
 ----
 func (c *Manager) Delete() error
 ----
 
-[source,go]
-----
-func (c *Manager) getTasks(recursive bool, tType string) ([]uint64, error)
-----
+=== Procs
 
 [source,go]
 ----
 func (c *Manager) Procs(recursive bool) ([]uint64, error)
 ----
 
+=== Threads
+
 [source,go]
 ----
 func (c *Manager) Threads(recursive bool) ([]uint64, error)
 ----
+
+=== MoveTo
 
 [source,go]
 ----
 func (c *Manager) MoveTo(destination *Manager) error
 ----
 
+=== Stat
+
 [source,go]
 ----
 func (c *Manager) Stat() (*stats.Metrics, error)
 ----
+
+=== Freeze
 
 [source,go]
 ----
 func (c *Manager) Freeze() error
 ----
 
+=== Thaw
+
 [source,go]
 ----
 func (c *Manager) Thaw() error
 ----
 
-[source,go]
-----
-func (c *Manager) freeze(path string, state State) error
-----
-
-[source,go]
-----
-func (c *Manager) isCgroupEmpty() bool
-----
+=== MemoryEventFD
 
 [source,go]
 ----
 func (c *Manager) MemoryEventFD() (int, uint32, error)
 ----
 
+=== EventChan
+
 [source,go]
 ----
 func (c *Manager) EventChan() (<-chan Event, <-chan error)
 ----
 
-[source,go]
-----
-func (c *Manager) waitForEvents(ec chan<- Event, errCh chan<- error)
-----
+=== DeleteSystemd
 
 [source,go]
 ----
