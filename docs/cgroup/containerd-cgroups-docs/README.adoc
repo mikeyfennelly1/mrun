@@ -5,8 +5,6 @@ https://github.com/containerd/cgroups[Repo for the package.]
 
 == Overview
 
-== Files (high level parts of the package)
-
 == Package level methods
 
 === cgroupv2.Load
@@ -343,3 +341,139 @@ const (
 ----
 
 == manager.go
+
+The manager struct seems to be the most comprehensive API in the cgroupv2 package. Here are some of the methods on it:
+
+
+
+=== GetType
+
+[source,go]
+----
+func (c *Manager) GetType() (CgroupType, error)
+----
+
+[source,go]
+----
+func (c *Manager) SetType(cgType CgroupType) error
+----
+
+[source,go]
+----
+func (c *Manager) RootControllers() ([]string, error)
+----
+
+[source,go]
+----
+func (c *Manager) Controllers() ([]string, error)
+----
+
+[source,go]
+----
+func (c *Manager) Update(resources *Resources) error
+----
+
+[source,go]
+----
+func (c *Manager) ToggleControllers(controllers []string, t ControllerToggle) error
+----
+
+[source,go]
+----
+func (c *Manager) writeSubtreeControl(filePath string, controllers []string, t ControllerToggle) error
+----
+
+[source,go]
+----
+func (c *Manager) NewChild(name string, resources *Resources) (*Manager, error)
+----
+
+[source,go]
+----
+func (c *Manager) AddProc(pid uint64) error
+----
+
+[source,go]
+----
+func (c *Manager) AddThread(tid uint64) error
+----
+
+[source,go]
+----
+func (c *Manager) Kill() error
+----
+
+[source,go]
+----
+func (c *Manager) fallbackKill() error
+----
+
+[source,go]
+----
+func (c *Manager) Delete() error
+----
+
+[source,go]
+----
+func (c *Manager) getTasks(recursive bool, tType string) ([]uint64, error)
+----
+
+[source,go]
+----
+func (c *Manager) Procs(recursive bool) ([]uint64, error)
+----
+
+[source,go]
+----
+func (c *Manager) Threads(recursive bool) ([]uint64, error)
+----
+
+[source,go]
+----
+func (c *Manager) MoveTo(destination *Manager) error
+----
+
+[source,go]
+----
+func (c *Manager) Stat() (*stats.Metrics, error)
+----
+
+[source,go]
+----
+func (c *Manager) Freeze() error
+----
+
+[source,go]
+----
+func (c *Manager) Thaw() error
+----
+
+[source,go]
+----
+func (c *Manager) freeze(path string, state State) error
+----
+
+[source,go]
+----
+func (c *Manager) isCgroupEmpty() bool
+----
+
+[source,go]
+----
+func (c *Manager) MemoryEventFD() (int, uint32, error)
+----
+
+[source,go]
+----
+func (c *Manager) EventChan() (<-chan Event, <-chan error)
+----
+
+[source,go]
+----
+func (c *Manager) waitForEvents(ec chan<- Event, errCh chan<- error)
+----
+
+[source,go]
+----
+func (c *Manager) DeleteSystemd()
+----
