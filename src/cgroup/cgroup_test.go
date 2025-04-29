@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-const testSliceName = "test-cgroup.slice"
+const testSliceName = "2test-cgroup.slice"
 
 func TestConfigureCgroups(t *testing.T) {
 	readJSON, err := os.ReadFile("/home/mfennelly/config.json")
@@ -40,9 +40,20 @@ func TestConfigureCgroups(t *testing.T) {
 		return
 	}
 
-	err = m.Update()
+	err = m.Update(cgroup2.ToResources(&r))
 	require.NoError(t, err)
 
+	require.NoError(t, err)
+}
+
+func TestKillSystemd(t *testing.T) {
+	m, err := cgroup2.LoadSystemd("/", testSliceName)
+	if err != nil {
+		logrus.Errorf("Failed to create manager for cgroup slice: %s: %v\n", testSliceName, err)
+		return
+	}
+
+	err = m.Kill()
 	require.NoError(t, err)
 }
 
