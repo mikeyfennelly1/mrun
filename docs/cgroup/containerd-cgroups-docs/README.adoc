@@ -160,7 +160,17 @@ type Event struct {
 [[Resources]]
 === Resources
 
-This object represents resources in a control group. It contains pointers to objects like <<CPU, CPU>>, <<Memory, Memory>>, <<Pids, Pids>>, <<IO, IO>>, <<RDMA, RDMA>>, <<HugeTlb, HugeTlb>>, link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L504[LinuxDeviceCgroup]
+This object represents resources in a control group.
+
+Relevant types:
+
+- <<CPU, CPU>>
+- <<Memory, Memory>>
+- <<Pids, Pids>>
+- <<IO, IO>>
+- <<RDMA, RDMA>>
+- <<HugeTlb, HugeTlb>>
+- link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L504[LinuxDeviceCgroup]
 
 [source, go]
 ----
