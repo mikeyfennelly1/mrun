@@ -96,12 +96,18 @@ if err != nil {
 
 
 === cgroupv2.PidGroupPath
+
+Get the path to teh cgroup for a pid.
+
 [source, go]
 ----
 func PidGroupPath(pid int) (string, error)
 ----
 
 === cgroupv2.ToResources
+
+Get a <<Resources>> object for a specs.LinuxResources object.
+
 [source, go]
 ----
 func ToResources(spec *specs.LinuxResources) *Resources
@@ -114,6 +120,11 @@ func VerifyGroupPath(g string) error
 ----
 
 === cgroupv2.WithMountpoint
+
+==== Relevant Types
+
+- <<InitOpts>>
+
 [source, go]
 ----
 func WithMountpoint(path string) InitOpts
@@ -211,6 +222,15 @@ type CPU struct {
 ----
 
 === Entry
+
+Dont know fully what this is. From looking at it it seems to be rate limiting operations on a device.
+
+==== Relevant Types:
+- <<IOType>>
+
+==== Relevant Methods
+-
+
 [source, go]
 ----
 type Entry struct {
@@ -228,6 +248,10 @@ type HugeTlb []HugeTlbEntry
 ----
 
 === HugeTlbEntry
+
+==== Relevant Types
+- HugeTlb
+
 [source, go]
 ----
 type HugeTlbEntry struct {
@@ -237,6 +261,11 @@ type HugeTlbEntry struct {
 ----
 
 === IO
+
+==== Relevant Types
+- <<BFQ>>
+- <<Entry>>
+
 [source, go]
 ----
 type IO struct {
@@ -451,13 +480,6 @@ const (
 type InitConfig struct {
 	mountpoint string
 }
-----
-
-=== InitOpts
-
-[source, go]
-----
-type InitOpts func(c *InitConfig) error
 ----
 
 === IOType
