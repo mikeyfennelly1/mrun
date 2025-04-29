@@ -106,7 +106,7 @@ func PidGroupPath(pid int) (string, error)
 
 === cgroupv2.ToResources
 
-Get a <<Resources>> object for a link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L455[specs.LinuxResources] object.
+Get a <<Resources>> object for a link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L455[specs.LinuxResources, window=_blank] object.
 
 [source, go]
 ----
@@ -170,7 +170,7 @@ Relevant types:
 - <<IO, IO>>
 - <<RDMA, RDMA>>
 - <<HugeTlb, HugeTlb>>
-- link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L504[LinuxDeviceCgroup]
+- link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L504[LinuxDeviceCgroup, window=_blank]
 
 [source, go]
 ----
@@ -325,7 +325,7 @@ type RDMAEntry struct {
 [[CgroupType]]
 === CgroupType
 
-Represents the type of a control group. It is linked to the link:https://docs.kernel.org/admin-guide/cgroup-v2.html#core-interface-files[Core Interface File] `cgroup.type` file in the v2 heirarchy.
+Represents the type of a control group. It is linked to the link:https://docs.kernel.org/admin-guide/cgroup-v2.html#core-interface-files[Core Interface File, window=_blank] `cgroup.type` file in the v2 heirarchy.
 
 *Relevant Methods*:
 
