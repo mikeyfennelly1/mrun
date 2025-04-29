@@ -9,14 +9,16 @@ https://github.com/containerd/cgroups[Repo for the package.]
 
 === cgroupv2.Load
 
+Takes an group name and <<InitOpts>> parameters, and returns a <<Manager>> object.
+
 [source, go]
 ----
 func Load(group string, opts ...InitOpts) (*Manager, error)
 ----
 
-Given the path to the control `group`, and initialization options `InitOpts` this function returns a pointer to a `Manager` struct.
-
 === cgroupv2.LoadSystemd
+
+Load an existing cgroup in a systemd system, and get a <<Manager>> object for that cgroup path.
 
 [source, go]
 ----
@@ -46,12 +48,18 @@ func NestedGroupPath(suffix string) (string, error)
 ----
 
 === cgroupv2.NewCPUMax
+
+Sets a new value in the `cpu.max` file and returns a <<CPUMax, CPUMax>> object.
+
 [source, go]
 ----
 func NewCPUMax(quota *int64, period *uint64) CPUMax
 ----
 
 === cgroupv2.NewManager
+
+Creates a <<Manager>> object for an existing cgroup.
+
 [source, go]
 ----
 func NewManager(mountpoint string, group string, resources *Resources)
@@ -169,6 +177,11 @@ type Value struct {
 ----
 
 === BFQ
+
+BFQ (Budget Fair Queueing) is an I/O scheduler used in Linux to manage allocation of disk bandwidth among different processes or groups of processes. Designed to ensure that all procs get fair share of I/O resources.
+
+Can be used as part of I/O scheduler in for managing disk I/O bandwidth allocation between cgroups.
+
 [source, go]
 ----
 type BFQ struct {
@@ -179,6 +192,13 @@ type BFQ struct {
 === CPU
 
 This represents the CPU controller, which is a _threaded controller_.
+
+The subcontrollers that this structure maps to are the
+
+- `cpu.weight`
+- `cpu.max`
+- `cpuset.cpus`
+- `cpuset.mems`
 
 [source, go]
 ----
@@ -394,6 +414,11 @@ type Manager struct {
 ----
 
 === ControllerToggle
+
+Relevant methods:
+
+- <<ToggleControllers, ToggleControllers>>
+
 [source, go]
 ----
 type ControllerToggle int
@@ -515,7 +540,7 @@ func (c *Manager) Update(resources *Resources) error
 
 === ToggleControllers
 
-Toggle the value of a controller in a cgroup using a <<ControllerToggle, ControllerToggle>> type.
+Enable/disable a controller by using the <<ControllerToggle, ControllerToggle>> type.
 
 [source,go]
 ----
@@ -524,12 +549,15 @@ func (c *Manager) ToggleControllers(controllers []string, t ControllerToggle) er
 
 === NewChild
 
+
 [source,go]
 ----
 func (c *Manager) NewChild(name string, resources *Resources) (*Manager, error)
 ----
 
 === AddProc
+
+Add a process to a cgroup by PID.
 
 [source,go]
 ----
@@ -538,12 +566,16 @@ func (c *Manager) AddProc(pid uint64) error
 
 === AddThread
 
+Add a thread to the cgroup by thread id (tid).
+
 [source,go]
 ----
 func (c *Manager) AddThread(tid uint64) error
 ----
 
 === Kill
+
+Kill a cgroup.
 
 [source,go]
 ----
@@ -552,12 +584,16 @@ func (c *Manager) Kill() error
 
 === Delete
 
+Delete a cgroup.
+
 [source,go]
 ----
 func (c *Manager) Delete() error
 ----
 
 === Procs
+
+Returns the pids that are in a cgroup.
 
 [source,go]
 ----
@@ -566,6 +602,8 @@ func (c *Manager) Procs(recursive bool) ([]uint64, error)
 
 === Threads
 
+Returns the tids for threads in the cgroup.
+
 [source,go]
 ----
 func (c *Manager) Threads(recursive bool) ([]uint64, error)
@@ -573,12 +611,16 @@ func (c *Manager) Threads(recursive bool) ([]uint64, error)
 
 === MoveTo
 
+Move all items of a cgroup to another cgroup.
+
 [source,go]
 ----
 func (c *Manager) MoveTo(destination *Manager) error
 ----
 
 === Stat
+
+Get a `stats.metrics` object for a cgroup.
 
 [source,go]
 ----
