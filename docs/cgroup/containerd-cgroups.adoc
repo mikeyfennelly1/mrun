@@ -172,6 +172,11 @@ Relevant types:
 - <<HugeTlb, HugeTlb>>
 - link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L504[LinuxDeviceCgroup, window=_blank]
 
+[NOTE]
+====
+The link:https://docs.kernel.org/admin-guide/cgroup-v2.html#device-controller[devices controller, window="_blank"] in cgroupv2 is not a visible controller in the cgroup heirarchy. It also may be subject to conflictions with LSMs like SELinux and Apparmor.
+====
+
 [source, go]
 ----
 // Resources for a cgroups v2 unified hierarchy
