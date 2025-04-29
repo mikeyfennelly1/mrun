@@ -106,7 +106,7 @@ func PidGroupPath(pid int) (string, error)
 
 === cgroupv2.ToResources
 
-Get a <<Resources>> object for a specs.LinuxResources object.
+Get a <<Resources>> object for a link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L455[specs.LinuxResources] object.
 
 [source, go]
 ----
@@ -160,7 +160,7 @@ type Event struct {
 [[Resources]]
 === Resources
 
-This object represents resources in a control group. It contains pointers to objects like <<CPU, CPU>>, <<Memory, Memory>>, <<Pids, Pids>>, <<IO, IO>>, <<RDMA, RDMA>>, <<HugeTlb, HugeTlb>>, link:[LinuxDeviceCgroup]
+This object represents resources in a control group. It contains pointers to objects like <<CPU, CPU>>, <<Memory, Memory>>, <<Pids, Pids>>, <<IO, IO>>, <<RDMA, RDMA>>, <<HugeTlb, HugeTlb>>, link:https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L504[LinuxDeviceCgroup]
 
 [source, go]
 ----
