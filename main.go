@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/src/cgroup"
 	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/mikeyfennelly1/mrun/src/namespace"
 	"github.com/mikeyfennelly1/mrun/src/proc"
@@ -82,6 +83,18 @@ var chrootCommand = &cobra.Command{
 			return
 		}
 
+		m, err := cgroup.InitCgroup("test-container.slice", *spec.Linux.Resources)
+		if err != nil {
+			logrus.Errorf("could not initialize cgroup for container: %v\n", err)
+			return
+		}
+
+		err = m.AddProc(uint64(os.Getpid()))
+		if err != nil {
+			logrus.Errorf("could not add this process to cgroup for container: %v\n", err)
+			return
+		}
+
 		err = syscall.Chroot("./rootfs")
 		if err != nil {
 			return
@@ -113,7 +126,6 @@ var chrootCommand = &cobra.Command{
 		}
 
 		err = fs.CreateFileSystem(spec)
-
 		execSh()
 	},
 }
