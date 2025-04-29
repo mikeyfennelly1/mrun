@@ -1,8 +1,6 @@
 module github.com/mikeyfennelly1/mrun
 
-go 1.22.0
-
-toolchain go1.23.1
+go 1.23
 
 require (
 	github.com/containerd/cgroups/v3 v3.0.5
