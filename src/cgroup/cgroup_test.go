@@ -46,6 +46,33 @@ func TestConfigureCgroups(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestUpdatePids(t *testing.T) {
+	// Load the testing control group
+	m, err := cgroup2.LoadSystemd("/", testSliceName)
+	if err != nil {
+		logrus.Errorf("Failed to create manager for cgroup slice: %s: %v\n", testSliceName, err)
+		return
+	}
+
+	// read the test json config into a []byte
+	readJSON, err := os.ReadFile("/home/mfennelly/config.json")
+	require.NoError(t, err)
+
+	// unmarshal test json to specs.LinuxResources
+	var r specs.LinuxResources
+	err = json.Unmarshal(readJSON, &r)
+	require.NoError(t, err)
+
+	// set the pids value in the LinuxResources obj
+	r.Pids = &specs.LinuxPids{
+		Limit: 20,
+	}
+
+	err = m.Update(cgroup2.ToResources(&r))
+	require.NoError(t, err)
+
+}
+
 func TestKillSystemd(t *testing.T) {
 	m, err := cgroup2.LoadSystemd("/", testSliceName)
 	if err != nil {
