@@ -27,6 +27,7 @@ func TestConfigureCgroups(t *testing.T) {
 			Access: "rwm",
 		},
 	}
+	r.Pids = 
 
 	err = InitCgroup("test-cgroup.slice", r)
 	require.NoError(t, err)

@@ -1,0 +1,9 @@
+{
+  "devices": [
+    {
+      "allow": true,
+      "type": "block",
+      
+    }
+  ]
+}

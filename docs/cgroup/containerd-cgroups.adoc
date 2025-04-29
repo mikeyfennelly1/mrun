@@ -208,6 +208,10 @@ BFQ (Budget Fair Queueing) is an I/O scheduler used in Linux to manage allocatio
 
 Can be used as part of I/O scheduler in for managing disk I/O bandwidth allocation between cgroups.
 
+==== Relevant Types
+
+- <<IO>>
+
 [source, go]
 ----
 type BFQ struct {
@@ -217,7 +221,7 @@ type BFQ struct {
 
 === CPU
 
-This represents the CPU controller, which is a _threaded controller_.
+This represents the link:https://docs.kernel.org/admin-guide/cgroup-v2.html#cpuset[Cpuset Controller], and link:https://docs.kernel.org/admin-guide/cgroup-v2.html#cpu[CPU Controller] which is a _threaded controller_.
 
 The subcontrollers that this structure maps to are the
 
@@ -242,9 +246,6 @@ Dont know fully what this is. From looking at it it seems to be rate limiting op
 
 ==== Relevant Types:
 - <<IOType>>
-
-==== Relevant Methods
--
 
 [source, go]
 ----
@@ -302,6 +303,9 @@ type Memory struct {
 ----
 
 === Pids
+
+Represents the link:https://docs.kernel.org/admin-guide/cgroup-v2.html#pid[PID controller].
+
 [source, go]
 ----
 type Pids struct {
@@ -309,7 +313,12 @@ type Pids struct {
 }
 ----
 
+Although the PIDs controller contains _events_, _peak_, _current_ and _max_, the only one that is set is _pids.max_.
+
 === RDMA
+
+Represents the RDMA (Remote Direct Memory Access)
+
 [source, go]
 ----
 type RDMA struct {
