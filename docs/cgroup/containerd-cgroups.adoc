@@ -162,7 +162,7 @@ type Event struct {
 
 This object represents resources in a control group.
 
-Relevant types:
+==== Relevant types
 
 - <<CPU, CPU>>
 - <<Memory, Memory>>
@@ -176,6 +176,10 @@ Relevant types:
 ====
 The link:https://docs.kernel.org/admin-guide/cgroup-v2.html#device-controller[devices controller, window="_blank"] in cgroupv2 is not a visible controller in the cgroup heirarchy. It also may be subject to conflictions with LSMs like SELinux and Apparmor.
 ====
+
+==== Relevant Methods
+
+- <<cgroupv2.ToResources>>
 
 [source, go]
 ----

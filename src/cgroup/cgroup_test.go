@@ -2,11 +2,15 @@ package cgroup
 
 import (
 	"encoding/json"
+	"github.com/containerd/cgroups/v3/cgroup2"
 	"github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
 )
+
+const testSliceName = "test-cgroup.slice"
 
 func TestConfigureCgroups(t *testing.T) {
 	readJSON, err := os.ReadFile("/home/mfennelly/config.json")
@@ -27,8 +31,31 @@ func TestConfigureCgroups(t *testing.T) {
 			Access: "rwm",
 		},
 	}
-	r.Pids = 
 
-	err = InitCgroup("test-cgroup.slice", r)
+	err = InitCgroup(testSliceName, r)
+
+	m, err := cgroup2.LoadSystemd("/", testSliceName)
+	if err != nil {
+		logrus.Errorf("Failed to create manager for cgroup slice: %s: %v\n", testSliceName, err)
+		return
+	}
+
+	err = m.Update()
 	require.NoError(t, err)
+
+	require.NoError(t, err)
+}
+
+func cleanUp() {
+	m, err := cgroup2.LoadSystemd("/", testSliceName)
+	if err != nil {
+		logrus.Errorf("Failed to create manager for cgroup slice: %s: %v\n", testSliceName, err)
+		return
+	}
+
+	err = m.Delete()
+	if err != nil {
+		logrus.Errorf("Failed to delete cgroup slice: %s\n", testSliceName)
+		return
+	}
 }
