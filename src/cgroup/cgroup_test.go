@@ -57,6 +57,17 @@ func TestKillSystemd(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestDeleteCgroup(t *testing.T) {
+	m, err := cgroup2.LoadSystemd("/", testSliceName)
+	if err != nil {
+		logrus.Errorf("Failed to create manager for cgroup slice: %s: %v\n", testSliceName, err)
+		return
+	}
+
+	err = m.DeleteSystemd()
+	require.NoError(t, err)
+}
+
 func cleanUp() {
 	m, err := cgroup2.LoadSystemd("/", testSliceName)
 	if err != nil {
