@@ -16,6 +16,18 @@ func TestConfigureCgroups(t *testing.T) {
 	err = json.Unmarshal(readJSON, &r)
 	require.NoError(t, err)
 
-	err = ConfigureCgroups(r)
+	mjr := int64(12)
+	mnr := int64(10)
+	r.Devices = []specs.LinuxDeviceCgroup{
+		{
+			Allow:  false,
+			Type:   "block",
+			Major:  &mjr,
+			Minor:  &mnr,
+			Access: "rwm",
+		},
+	}
+
+	err = InitCgroup("test-cgroup.slice", r)
 	require.NoError(t, err)
 }
