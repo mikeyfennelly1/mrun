@@ -10,6 +10,10 @@ mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtim
 This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
 ====
 
+=== What is a container?
+
+The Open Container Initiative defines a container as
+
 == System prerequisites for using mrun
 
 My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
@@ -56,10 +60,12 @@ Now run `mrun start`, and your default configurations should start a bash proces
 
 Originally this project was created as a way to learn Linux and container technology. It ended up requiring a lot of research, hence the long pauses in development during the period of creating mrun.
 
+A heavily motivating factor for this project is that container technology and operating system level virtualization are at the core of modern, cloud native applications and workflows. Low-level container technology (like seen in this runtime) enables other, higher level container technologies like Kubernetes and Red Hat Openshift. These technologies and the products built around them have always seemed quite interesting to me, so I thought that there would be no better way to investigate these technologies further than by starting at the foundations.
+
 == Reading and documentation
 
-During the creation of this project I did a lot of reading on containerization. I have created documentation in `/docs`, which has some reading that can be a bit more approachable to a newcomer than trying to sieve through the internet for reading material.
+During the creation of this project I did a lot of reading on containerization. I have created link:https://github.com/mikeyfennelly1/mrun/tree/main/docs[documentation] which has some reading that can be a bit more approachable to a newcomer than trying to sieve through the internet for reading material. Containers are quite a complex topic, and I hope that these docs can help understand some of the elements involved.
 
-The docs folder has reading about OCI standards, Kernel features that underpin container technology and additional miscellaneous docs.
+The docs folder has reading about OCI standards and Kernel features that underpin container technology like control groups (cgroups).
 
 Enjoy!
