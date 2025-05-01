@@ -65,7 +65,6 @@ func TestUpdatePids(t *testing.T) {
 
 	err = m.Update(cgroup2.ToResources(&r))
 	require.NoError(t, err)
-
 }
 
 func TestKillSystemd(t *testing.T) {

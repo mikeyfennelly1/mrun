@@ -20,6 +20,7 @@ import (
 const (
 	stateFilesLocation = "/var/run/mrun/"
 	stateDotJSON       = "state.json"
+	ociVersion         = "0.2.0"
 )
 
 // InitContainerStateDirAndFile creates a directory in state
@@ -61,7 +62,7 @@ func GetContainerManager(containerID string) ContainerManager {
 	}
 }
 
-func (c *ContainerManager) UpdateContainerStateFile(state specs.ContainerState) error {
+func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error {
 	stateByteArray, err := json.Marshal(state)
 	if err != nil {
 		logrus.Errorf("could not update container state: %v", err)
