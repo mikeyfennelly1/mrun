@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/syndtr/gocapability/capability"
 	"os"
+	"strings"
 )
 
 // SetFileCapabilities for the binary for the init process of
@@ -40,7 +41,7 @@ func SetAndApplyCapsetToCurrentPid(capabilitySet capability.CapType, capabilitie
 	for _, thisCap := range capabilities {
 		err := SetAndApplyCapToCurrentPid(capabilitySet, getCap(thisCap))
 		if err != nil {
-			logrus.Warn(err)
+			logrus.Errorf("%v", err)
 		}
 	}
 }
@@ -49,8 +50,7 @@ func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capabili
 	pid := os.Getpid()
 	procCaps, err := capability.NewPid2(pid)
 	if err != nil {
-		fmt.Printf("error getting process capabilities: %v\n", err)
-		return err
+		return fmt.Errorf("error getting process capabilities: %v\n", err)
 	}
 	err = procCaps.Load()
 	if err != nil {
@@ -61,8 +61,10 @@ func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capabili
 
 	err = procCaps.Apply(capability.CAPS)
 	if err != nil {
-		fmt.Printf("error applying capability '%v' to the %v capability set: %v\n", which, capabilitySet, err)
-		return err
+		capName := strings.ToUpper(fmt.Sprintf("CAP_%v", which))
+		capSetName := strings.ToUpper(fmt.Sprintf("%v", capabilitySet))
+		bold, reset := "\033[1m", "\033[0m"
+		return fmt.Errorf("error applying capability %s%v%s to the %s%v%s capability set: %v\n", bold, capName, reset, bold, capSetName, reset, err)
 	}
 
 	return nil
