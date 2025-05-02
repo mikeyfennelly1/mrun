@@ -60,6 +60,8 @@ func NewCPUMax(quota *int64, period *uint64) CPUMax
 
 Creates a <<Manager>> object for an existing cgroup.
 
+The resources object must be *not nil*. This creates a new cgroup.
+
 [source, go]
 ----
 func NewManager(mountpoint string, group string, resources *Resources)
