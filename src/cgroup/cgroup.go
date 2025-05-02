@@ -66,7 +66,7 @@ func createNewCgroupForContainer(containerID string, specResources specs.LinuxRe
 }
 
 func getGroupNameForContainerID(containerID string) string {
-	return fmt.Sprintf("%s.scope", containerID)
+	return fmt.Sprintf("%s.slice", containerID)
 }
 
 func GetResourceUsageInformation(containerID string) (*stats.Metrics, error) {
