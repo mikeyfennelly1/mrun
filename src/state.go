@@ -14,13 +14,16 @@ import (
 	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
+	"math/rand"
 	"os"
+	"time"
 )
 
 const (
 	stateFilesLocation = "/var/run/mrun/"
 	stateDotJSON       = "state.json"
 	ociVersion         = "0.2.0"
+	letters            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
 // InitContainerStateDirAndFile creates a directory in state
@@ -134,4 +137,30 @@ func (c *ContainerManager) CreateAndInitStateFile() error {
 	logrus.Infof("succesfull initialization of container state file at %s", c.getContainerStateFileName())
 
 	return nil
+}
+
+func printContainerState(containerId string) error {
+	m := GetContainerManager(containerId)
+	state, err := m.GetContainerState()
+	if err != nil {
+		return err
+	}
+
+	pid := state.Pid
+	status := state.Status
+	bundleLocation := state.Bundle
+
+	fmt.Printf("%v\t%v\t%v\t\n", "pid", "status", "bundleLocation")
+	fmt.Printf("%v\t%v\t%v\t\n", pid, status, bundleLocation)
+
+	return nil
+}
+
+func CreateNewContainerID() string {
+	rand.Seed(time.Now().UnixNano())
+	b := make([]byte, 16)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
