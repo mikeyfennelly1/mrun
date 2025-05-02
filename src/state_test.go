@@ -34,3 +34,8 @@ func TestContainerManager_DeleteStateFile(t *testing.T) {
 	err := m.DeleteStateFile()
 	require.NoError(t, err)
 }
+
+func TestPrintContainerState(t *testing.T) {
+	err := printContainerState(containerID)
+	require.NoError(t, err)
+}
