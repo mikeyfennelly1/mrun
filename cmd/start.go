@@ -41,7 +41,11 @@ var Start = &cobra.Command{
 			logrus.Fatalf("error initializing cgroup: %v", err)
 		}
 
-		cgroup.MoveCurrentPidToCgroup(containerID)
+		err = cgroup.MoveCurrentPidToCgroup(containerID)
+		if err != nil {
+			logrus.Errorf("error moving process into cgroup: %v", err)
+			return
+		}
 
 		// set and apply capability sets to the process
 		proc.SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
