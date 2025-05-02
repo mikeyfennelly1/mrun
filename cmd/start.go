@@ -53,6 +53,12 @@ var Start = &cobra.Command{
 		proc.SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
 		proc.SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
 
+		err = src.InitContainerStateDirAndFile(containerID, spec)
+		if err != nil {
+			logrus.Errorf("could not intialize container state: %v", err)
+			return
+		}
+
 		// execs the process with the current process program
 		// new program is running in new namespaces in chroot jail.
 		err = namespace.RestartInNewNS("chroot")

@@ -31,9 +31,8 @@ const (
 // state.json in that directory. i.e
 //
 // /var/run/mrun/<container-id>/state.json
-func InitContainerStateDirAndFile(containerID string) error {
+func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error {
 	containerDirname := fmt.Sprintf("%s%s", stateFilesLocation, containerID)
-	containerStateFileAbsPath := fmt.Sprintf("%s/%s", containerDirname, stateDotJSON)
 
 	err := os.MkdirAll(containerDirname, 0775)
 	if err != nil {
@@ -41,14 +40,22 @@ func InitContainerStateDirAndFile(containerID string) error {
 		return err
 	}
 
-	file, err := os.Create(containerStateFileAbsPath)
+	m := GetContainerManager(containerID)
+	pwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	err = file.Chown(0, 0)
+	state := specs.State{
+		Version:     ociVersion,
+		ID:          containerID,
+		Status:      "running",
+		Pid:         os.Getpid(),
+		Bundle:      pwd,
+		Annotations: nil,
+	}
+	err = m.CreateAndInitStateFile(&state)
 	if err != nil {
-		logrus.Errorf("error changing ownership on state.json for container: %v", err)
 		return err
 	}
 
@@ -108,7 +115,7 @@ func (c *ContainerManager) getContainerDirectoryName() string {
 	return fmt.Sprintf("%s%s", stateFilesLocation, c.containerID)
 }
 
-func (c *ContainerManager) CreateAndInitStateFile() error {
+func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error {
 	// create the stateFileLocation directory
 	err := os.MkdirAll(c.getContainerDirectoryName(), 0775)
 	if err != nil {
@@ -122,7 +129,11 @@ func (c *ContainerManager) CreateAndInitStateFile() error {
 		return err
 	}
 
-	err = os.WriteFile(c.getContainerStateFileName(), []byte("{}"), 0666)
+	stateJSONData, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(c.getContainerStateFileName(), stateJSONData, 0666)
 	if err != nil {
 		logrus.Fatalf("could not initialize file %s: %v", c.getContainerStateFileName(), err)
 		return err
