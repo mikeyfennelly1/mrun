@@ -91,6 +91,8 @@ func (p *ProcNamespaceProfile) GetCloneFlagBitMask() uintptr {
 	return uintptr(result)
 }
 
+// RestartInNewNS execs the current program, but in new namespaces
+// according to the config file namespaces.
 func RestartInNewNS(args ...string) error {
 	p, err := GetIsolatedProcessProfile()
 	if err != nil {
@@ -104,7 +106,7 @@ func RestartInNewNS(args ...string) error {
 		Cloneflags: p.GetCloneFlagBitMask(),
 	}
 
-	// Set input/output to inherit from current process
+	// Set input/output to standard io options
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
