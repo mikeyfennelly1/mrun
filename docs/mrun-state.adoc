@@ -1,0 +1,98 @@
+= mrun-state
+:toc:
+
+== Introduction and purpose
+
+The purpose of these files are to create an API to interact with, and maintain the state of running containers on an mrun host. Essentially it is used to interact with the link:https://github.com/opencontainers/runtime-spec/blob/main/runtime.md#state[_state.json_] files for containers.
+
+== Methods
+
+[source, go]
+----
+func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error
+----
+
+[source, go]
+----
+func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error
+----
+
+[source, go]
+----
+func GetContainerManager(containerID string) ContainerManager
+----
+
+[source, go]
+----
+func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error
+----
+
+[source, go]
+----
+func (c *ContainerManager) DeleteStateFile() error
+----
+
+[source, go]
+----
+func (c *ContainerManager) GetContainerState() (*specs.State, error)
+----
+
+[source, go]
+----
+func (c *ContainerManager) getContainerStateFileName() string
+----
+
+[source, go]
+----
+func (c *ContainerManager) getContainerDirectoryName() string
+----
+
+[source, go]
+----
+func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error
+----
+
+[source, go]
+----
+func GetContainers() (*[]Container, error)
+----
+
+[source, go]
+----
+func GetContainerInfoByContainerID(containerID string) (Container, error)
+----
+
+[source, go]
+----
+func getSubdirectories(root string) ([]string, error)
+----
+
+[source, go]
+----
+func printContainerState(containerId string) error
+----
+
+[source, go]
+----
+func CreateNewContainerID() string
+----
+
+== Types
+
+[source, go]
+----
+type ContainerManager struct {
+	containerID string
+}
+----
+
+[source, go]
+----
+type Container struct {
+	Name           string
+	ID             string
+	Command        string
+	Status         string
+	BundleLocation string
+}
+----
