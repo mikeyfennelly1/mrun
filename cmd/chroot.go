@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/src/cgroup"
 	"github.com/mikeyfennelly1/mrun/src/fs"
 	"github.com/mikeyfennelly1/mrun/src/proc"
 	"github.com/opencontainers/runtime-spec/specs-go"
@@ -26,18 +25,6 @@ var Chroot = &cobra.Command{
 		err = json.Unmarshal(jsonContent, &spec)
 		if err != nil {
 			fmt.Printf("error creating unmarshalling JSON: %v", err)
-			return
-		}
-
-		m, err := cgroup.InitCgroup("test-container.slice", *spec.Linux.Resources)
-		if err != nil {
-			logrus.Errorf("could not initialize cgroup for container: %v\n", err)
-			return
-		}
-
-		err = m.AddProc(uint64(os.Getpid()))
-		if err != nil {
-			logrus.Errorf("could not add this process to cgroup for container: %v\n", err)
 			return
 		}
 
