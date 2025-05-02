@@ -16,14 +16,15 @@ import (
 	"github.com/sirupsen/logrus"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"time"
 )
 
 const (
-	stateFilesLocation = "/var/run/mrun/"
-	stateDotJSON       = "state.json"
-	ociVersion         = "0.2.0"
-	letters            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	varRunMrun   = "/var/run/mrun/"
+	stateDotJSON = "state.json"
+	ociVersion   = "0.2.0"
+	letters      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
 // InitContainerStateDirAndFile creates a directory in state
@@ -32,7 +33,7 @@ const (
 //
 // /var/run/mrun/<container-id>/state.json
 func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error {
-	containerDirname := fmt.Sprintf("%s%s", stateFilesLocation, containerID)
+	containerDirname := fmt.Sprintf("%s%s", varRunMrun, containerID)
 
 	err := os.MkdirAll(containerDirname, 0775)
 	if err != nil {
@@ -112,7 +113,7 @@ func (c *ContainerManager) getContainerStateFileName() string {
 }
 
 func (c *ContainerManager) getContainerDirectoryName() string {
-	return fmt.Sprintf("%s%s", stateFilesLocation, c.containerID)
+	return fmt.Sprintf("%s%s", varRunMrun, c.containerID)
 }
 
 func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error {
@@ -150,24 +151,46 @@ func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error {
 	return nil
 }
 
-func printContainerState(containerId string) error {
-	m := GetContainerManager(containerId)
-	state, err := m.GetContainerState()
+type ContainerState struct {
+	Name           string
+	ID             string
+	Command        string
+	Status         string
+	BundleLocation string
+}
+
+func GetStateOfAllContainers() (*[]ContainerState, error) {
+	subdirs, err := getSubdirectories(varRunMrun)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	pid := state.Pid
-	status := state.Status
-	bundleLocation := state.Bundle
+	return nil, nil
+}
 
-	fmt.Printf("%v\t%v\t%v\t\n", "pid", "status", "bundleLocation")
-	fmt.Printf("%v\t%v\t%v\t\n", pid, status, bundleLocation)
-
+func GetContainerInfoByContainerID(containerID string) (ContainerState, error) {
+	containerStateFile := fmt.Sprintf("%s/%s", varRunMrun, containerID)
 	return nil
 }
 
-func CreateNewContainerID() string {
+func getSubdirectories(root string) ([]string, error) {
+	var subdirs []string
+
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			subdirs = append(subdirs, filepath.Join(root, entry.Name()))
+		}
+	}
+
+	return subdirs, nil
+}
+
+func NewContainerID() string {
 	rand.Seed(time.Now().UnixNano())
 	b := make([]byte, 16)
 	for i := range b {

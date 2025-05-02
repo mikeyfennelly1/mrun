@@ -5,80 +5,121 @@
 
 The purpose of these files are to create an API to interact with, and maintain the state of running containers on an mrun host. Essentially it is used to interact with the link:https://github.com/opencontainers/runtime-spec/blob/main/runtime.md#state[_state.json_] files for containers.
 
-== Methods
+== Public Methods
 
-[source, go]
-----
-func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error
-----
-
-[source, go]
-----
-func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error
-----
-
-[source, go]
-----
-func GetContainerManager(containerID string) ContainerManager
-----
-
-[source, go]
-----
-func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error
-----
-
-[source, go]
-----
-func (c *ContainerManager) DeleteStateFile() error
-----
-
-[source, go]
-----
-func (c *ContainerManager) GetContainerState() (*specs.State, error)
-----
-
-[source, go]
-----
-func (c *ContainerManager) getContainerStateFileName() string
-----
-
-[source, go]
-----
-func (c *ContainerManager) getContainerDirectoryName() string
-----
-
+=== CreateAndInitStateFile
 [source, go]
 ----
 func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error
 ----
 
+=== GetStateOfAllContainers
+
+Returns a state object for all containers.
+
+Internally this loops through each directory in /var/run/mrun, and reads the JSON contents into a ContainerState struct.
+
+*Relevant Types:*
+
+- <<ContainerState>>
+
 [source, go]
 ----
-func GetContainers() (*[]Container, error)
+func GetStateOfAllContainers() (*[]ContainerState, error)
 ----
+
+=== GetContainerInfoByContainerID
+
+Get the information of a container by the containerID
 
 [source, go]
 ----
 func GetContainerInfoByContainerID(containerID string) (Container, error)
 ----
 
+=== NewContainerID
+
+Returns a random alphanumeric 16 character string.
+
+[source, go]
+----
+func NewContainerID() string
+----
+
+=== InitContainerStateDirAndFile
+[source, go]
+----
+func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error
+----
+
+=== GetContainerManager
+Gets a ContainerManager object for a containerID.
+
+*Relevant Types:*
+
+- <<ContainerManager>>
+
+[source, go]
+----
+func GetContainerManager(containerID string) ContainerManager
+----
+
+=== UpdateContainerStateFile
+
+Update a container _state.json_ file according to a specs.State object.
+
+[source, go]
+----
+func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error
+----
+
+=== DeleteStateFile
+
+Remove the directory `/var/run/mrun/<container-id>` and in turn all it's children.
+
+[source, go]
+----
+func (c *ContainerManager) DeleteStateFile() error
+----
+
+=== GetContainerState
+[source, go]
+----
+func (c *ContainerManager) GetContainerState() (*specs.State, error)
+----
+
+== Private Methods
+
+=== getContainerStateFileName
+
+Returns the absolute path of the container state file, i.e. _/var/run/mrun/<container-id>/state.json_.
+
+[source, go]
+----
+func (c *ContainerManager) getContainerStateFileName() string
+----
+
+=== getContainerDirectoryName
+
+Returns absolute path of the container directory, i.e. _/var/run/mrun/<container-id>_
+
+[source, go]
+----
+func (c *ContainerManager) getContainerDirectoryName() string
+----
+
+=== getSubdirectories
+
+Gets the subdirectories of a directory.
+
 [source, go]
 ----
 func getSubdirectories(root string) ([]string, error)
 ----
 
-[source, go]
-----
-func printContainerState(containerId string) error
-----
-
-[source, go]
-----
-func CreateNewContainerID() string
-----
-
 == Types
 
+=== ContainerManager
 [source, go]
 ----
 type ContainerManager struct {
@@ -86,9 +127,10 @@ type ContainerManager struct {
 }
 ----
 
+=== ContainerState
 [source, go]
 ----
-type Container struct {
+type ContainerState struct {
 	Name           string
 	ID             string
 	Command        string
