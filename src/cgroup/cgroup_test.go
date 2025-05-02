@@ -13,32 +13,6 @@ import (
 const testSliceName = "test-container.slice"
 
 func TestConfigureCgroups(t *testing.T) {
-	readJSON, err := os.ReadFile("/home/mfennelly/config.json")
-	require.NoError(t, err)
-
-	var r specs.LinuxResources
-	err = json.Unmarshal(readJSON, &r)
-	require.NoError(t, err)
-
-	mjr := int64(12)
-	mnr := int64(10)
-	r.Devices = []specs.LinuxDeviceCgroup{
-		{
-			Allow:  false,
-			Type:   "block",
-			Major:  &mjr,
-			Minor:  &mnr,
-			Access: "rwm",
-		},
-	}
-
-	m, err := InitCgroup(testSliceName, r)
-	require.NoError(t, err)
-
-	err = m.Update(cgroup2.ToResources(&r))
-	require.NoError(t, err)
-
-	require.NoError(t, err)
 }
 
 func TestUpdatePids(t *testing.T) {

@@ -8,6 +8,11 @@ import (
 	"os"
 )
 
+const (
+	mrunCgroupSlice = "/"
+	mrunMountpoint  = "/"
+)
+
 func InitCgroup(containerID string, spec specs.Spec) error {
 	m, err := createNewCgroupForContainer(containerID, *spec.Linux.Resources)
 	if err != nil {
@@ -24,9 +29,20 @@ func InitCgroup(containerID string, spec specs.Spec) error {
 	return nil
 }
 
-func MoveCurrentPidToCgroup(containerID string) {
+func MoveCurrentPidToCgroup(containerID string) error {
 	pid := os.Getpid()
 
+	m, err := cgroup2.LoadSystemd(mrunCgroupSlice, getGroupNameForContainerID(containerID))
+	if err != nil {
+		return err
+	}
+
+	err = m.AddProc(uint64(pid))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // InitCgroup creates a new control group for the container.
@@ -34,8 +50,9 @@ func createNewCgroupForContainer(containerID string, specResources specs.LinuxRe
 	// get cgroup2.Resources obj from specs.LinuxResources obj
 	resources := cgroup2.ToResources(&specResources)
 
+	groupName := getGroupNameForContainerID(containerID)
 	// create the control group as direct descendant of root user slice.
-	m, err := cgroup2.NewSystemd("/", containerID, -1, resources)
+	m, err := cgroup2.NewSystemd(mrunCgroupSlice, groupName, -1, resources)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +65,12 @@ func createNewCgroupForContainer(containerID string, specResources specs.LinuxRe
 	return m, nil
 }
 
+func getGroupNameForContainerID(containerID string) string {
+	return fmt.Sprintf("%s.slice", containerID)
+}
+
 func GetResourceUsageInformation(containerID string) (*stats.Metrics, error) {
-	cg, err := cgroup2.LoadSystemd("/", containerID)
+	cg, err := cgroup2.LoadSystemd(mrunCgroupSlice, containerID)
 	if err != nil {
 		return nil, err
 	}
