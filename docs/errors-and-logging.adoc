@@ -1,0 +1,23 @@
+= Errors and Logging with the mrun runtime
+
+mrun provides command line options to enable desired log levels. This can help a user understand what is occurring under the hood, and do what they will with that information.
+
+== Enabling log levels
+
+mrun provides the 7 standard log levels:
+
+1. *Trace*: Provides detailed information about how mrun created the container.
+
+2. *Debug*: Provides debugging information.
+
+3. *Info*: General operational entries about what is going on in the application.
+
+4. *Warn*: Something unexpected happened, but mrun is still running fine.
+
+5. *Error*: Serious issues.
+
+6. *Fatal*: A very serious error occurred, causing application to exit.
+
+7. *Panic*: Logs a message and triggers a runtime panic.
+
+The standard, out of the box logging level is _Fatal_.

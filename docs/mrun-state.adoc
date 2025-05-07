@@ -1,13 +1,18 @@
 = mrun-state
 :toc:
+:toclevels: 4
 
 == Introduction and purpose
 
-The purpose of these files are to create an API to interact with, and maintain the state of running containers on an mrun host. Essentially it is used to interact with the link:https://github.com/opencontainers/runtime-spec/blob/main/runtime.md#state[_state.json_] files for containers.
+The purpose of these files are to create an API to interact with, and maintain the state of running containers on an mrun host. Essentially it is used to interact with the link:https://github.com/opencontainers/runtime-spec/blob/main/runtime.md#state[_state.json_] files for containers. In reality, this API interacts with the <<mrun runtime state directories>> and the data in this area of the root filesystem, to get information about containers running on the host.
 
-== /var/run/mrun
+== mrun runtime state directories
 
-The `/var/run/mrun` directory contains data for each mrun managed container in the system. The structure of the directory is as follows.
+The `/var/run/mrun` directory contains data for each mrun managed container in the system.
+
+==== Example directory structure
+
+Say, for example, there are two running containers on the system, and their IDs are *_example-container_* and *_another-example-container_*.
 
 [source, bash]
 ----
@@ -33,7 +38,9 @@ another-example-c...  /bundle-location   21min     stopped   8081      another-e
 
 == Public Methods
 
-=== CreateAndInitStateFile
+=== Interacting with state directory
+
+==== CreateAndInitStateFile
 Create an empty container state file (`_/var/run/mrun/container-id/state.json_`), and initialize this file with a JSON object representing the state of the container in link:https://github.com/opencontainers/runtime-spec/blob/main/schema/state-schema.json[standard OCI state.json format].
 
 [source, go]
@@ -41,7 +48,7 @@ Create an empty container state file (`_/var/run/mrun/container-id/state.json_`)
 func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error
 ----
 
-=== GetStateOfAllContainers
+==== GetStateOfAllContainers
 
 Returns a state object for all containers.
 
@@ -56,7 +63,7 @@ Internally this loops through each directory in /var/run/mrun, and reads the JSO
 func GetStateOfAllContainers() (*[]ContainerState, error)
 ----
 
-=== GetContainerInfoByContainerID
+==== GetContainerInfoByContainerID
 
 Get the information of a container by the containerID
 
@@ -65,22 +72,15 @@ Get the information of a container by the containerID
 func GetContainerInfoByContainerID(containerID string) (Container, error)
 ----
 
-=== NewContainerID
+==== InitContainerStateDirAndFile
+Initialize a container's  state directory (_/var/run/mrun/<container-id>_) and create a link:https://github.com/opencontainers/runtime-spec/blob/main/schema/state-schema.json[container state file (state.json)] in that directory, in accordance with the link:https://github.com/opencontainers/runtime-spec/blob/main/schema/config-schema.json[config.json spec] for that container.
 
-Returns a random alphanumeric 16 character string.
-
-[source, go]
-----
-func NewContainerID() string
-----
-
-=== InitContainerStateDirAndFile
 [source, go]
 ----
 func InitContainerStateDirAndFile(containerID string, spec specs.Spec) error
 ----
 
-=== GetContainerManager
+==== GetContainerManager
 Gets a ContainerManager object for a containerID.
 
 *Relevant Types:*
@@ -92,7 +92,7 @@ Gets a ContainerManager object for a containerID.
 func GetContainerManager(containerID string) ContainerManager
 ----
 
-=== UpdateContainerStateFile
+==== UpdateContainerStateFile
 
 Update a container _state.json_ file according to a specs.State object.
 
@@ -101,7 +101,7 @@ Update a container _state.json_ file according to a specs.State object.
 func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error
 ----
 
-=== DeleteStateFile
+==== DeleteStateFile
 
 Remove the directory `/var/run/mrun/<container-id>` and in turn all it's children.
 
@@ -110,15 +110,28 @@ Remove the directory `/var/run/mrun/<container-id>` and in turn all it's childre
 func (c *ContainerManager) DeleteStateFile() error
 ----
 
-=== GetContainerState
+==== GetContainerState
+Get state of a container from a container's state file.
+
 [source, go]
 ----
 func (c *ContainerManager) GetContainerState() (*specs.State, error)
 ----
 
+=== Utility Methods
+
+==== NewContainerID
+
+Returns a random alphanumeric 16 character string.
+
+[source, go]
+----
+func NewContainerID() string
+----
+
 == Private Methods
 
-=== getContainerStateFileName
+==== getContainerStateFileName
 
 Returns the absolute path of the container state file, i.e. _/var/run/mrun/<container-id>/state.json_.
 
@@ -127,7 +140,7 @@ Returns the absolute path of the container state file, i.e. _/var/run/mrun/<cont
 func (c *ContainerManager) getContainerStateFileName() string
 ----
 
-=== getContainerDirectoryName
+==== getContainerDirectoryName
 
 Returns absolute path of the container directory, i.e. _/var/run/mrun/<container-id>_
 
@@ -136,7 +149,7 @@ Returns absolute path of the container directory, i.e. _/var/run/mrun/<container
 func (c *ContainerManager) getContainerDirectoryName() string
 ----
 
-=== getSubdirectories
+==== getSubdirectories
 
 Gets the subdirectories of a directory.
 
@@ -147,7 +160,7 @@ func getSubdirectories(root string) ([]string, error)
 
 == Types
 
-=== ContainerManager
+==== ContainerManager
 [source, go]
 ----
 type ContainerManager struct {
@@ -155,7 +168,7 @@ type ContainerManager struct {
 }
 ----
 
-=== ContainerState
+==== ContainerState
 [source, go]
 ----
 type ContainerState struct {
