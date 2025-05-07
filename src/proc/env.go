@@ -16,6 +16,7 @@ func setEnvVar(envVar string) {
 	if strings.HasPrefix(envVar, path) {
 		pathVars := strings.Split(strings.TrimPrefix(envVar, path), ":")
 		for _, e := range pathVars {
+
 			logrus.Infof("path variable: %s\n", e)
 		}
 	}

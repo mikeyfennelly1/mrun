@@ -34,7 +34,7 @@ var Start = &cobra.Command{
 		}
 
 		// create a random containerID
-		containerID := src.CreateNewContainerID()
+		containerID := src.NewContainerID()
 		// initialize a new cgroup for the container based on the spec
 		err = cgroup.InitCgroup(containerID, spec)
 		if err != nil {

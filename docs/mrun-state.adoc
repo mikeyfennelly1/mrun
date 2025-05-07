@@ -5,9 +5,37 @@
 
 The purpose of these files are to create an API to interact with, and maintain the state of running containers on an mrun host. Essentially it is used to interact with the link:https://github.com/opencontainers/runtime-spec/blob/main/runtime.md#state[_state.json_] files for containers.
 
+== /var/run/mrun
+
+The `/var/run/mrun` directory contains data for each mrun managed container in the system. The structure of the directory is as follows.
+
+[source, bash]
+----
+(base) ➜  ~ tree /var/run/mrun
+/var/run/mrun
+├── another-example-container-id
+│   └── state.json
+└── example-container-id
+    └── state.json
+
+2 directories, 2 files
+----
+
+If this is the state of the containers on the machine, the output of the `mrun ps` command would be as follows:
+
+[source, bash]
+----
+(base) ➜  ~ mrun ps
+CONTAINER ID          BUNDLE             CREATED   STATUS    PORTS     NAMES
+example-container-id  /bundle-location   20min     running   8080      example-container
+another-example-c...  /bundle-location   21min     stopped   8081      another-example-container
+----
+
 == Public Methods
 
 === CreateAndInitStateFile
+Create an empty container state file (`_/var/run/mrun/container-id/state.json_`), and initialize this file with a JSON object representing the state of the container in link:https://github.com/opencontainers/runtime-spec/blob/main/schema/state-schema.json[standard OCI state.json format].
+
 [source, go]
 ----
 func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error

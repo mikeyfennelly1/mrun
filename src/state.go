@@ -169,7 +169,7 @@ func GetStateOfAllContainers() (*[]ContainerState, error) {
 }
 
 func GetContainerInfoByContainerID(containerID string) (ContainerState, error) {
-	containerStateFile := fmt.Sprintf("%s/%s", varRunMrun, containerID)
+
 	return nil
 }
 
