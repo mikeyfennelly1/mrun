@@ -13,7 +13,7 @@ func CreateFileSystem(spec specs.Spec) error {
 		fmt.Printf("not superuser\n")
 	}
 
-	// mount the god damn mounts
+	// iterate through spec.Mounts, mounting each visited item
 	for index, mount := range spec.Mounts {
 		err := mountInContainerFS(mount)
 		if err != nil {

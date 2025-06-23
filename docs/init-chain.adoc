@@ -1,0 +1,17 @@
+= init-chain
+
+A chain of command to initialize the container based on the `spec.json`.
+
+== InitChain
+A chain of command of `InitChainItem` structures.
+
+[source, go]
+----
+type InitChain interface {
+	DoChain() InitChainItem
+}
+
+type InitChainItem interface {
+	DoInitItem() error
+}
+----
