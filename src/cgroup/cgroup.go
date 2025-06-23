@@ -10,7 +10,6 @@ import (
 
 const (
 	mrunCgroupSlice = "/"
-	mrunMountpoint  = "/"
 )
 
 func InitCgroup(containerID string, spec specs.Spec) error {
