@@ -1,6 +1,8 @@
 = init-chain
+:toc:
 
-A chain of command to initialize the container based on the `spec.json`.
+== Abstract
+A chain of command type structure that can be used to sequentially execute atomic steps to initialize the container based on the `spec.json`.
 
 == InitChain
 A chain of command of `InitChainItem` structures.
