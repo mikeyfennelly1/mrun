@@ -160,17 +160,24 @@ type ContainerState struct {
 }
 
 func GetStateOfAllContainers() (*[]ContainerState, error) {
-	subdirs, err := getSubdirectories(varRunMrun)
+	subDirs, err := getSubdirectories(varRunMrun)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	var containerInfo []ContainerState
+	containerInfo = []ContainerState{}
+	for _, dir := range subDirs {
+		thisContainerState, _ := GetContainerInfoByContainerID(dir)
+		containerInfo = append(containerInfo, *thisContainerState)
+	}
+
+	return &containerInfo, nil
 }
 
-func GetContainerInfoByContainerID(containerID string) (ContainerState, error) {
+func GetContainerInfoByContainerID(containerID string) (*ContainerState, error) {
 
-	return nil
+	return nil, nil
 }
 
 func getSubdirectories(root string) ([]string, error) {

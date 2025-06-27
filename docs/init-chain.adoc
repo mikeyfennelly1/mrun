@@ -38,7 +38,7 @@ type InitChain interface {
 ----
 
 == InitChainNode
-The node function is ignorant of any chain structural or functional elements, such as previous/next nodes, current position.
+The node function is naive to any chain structural or functional elements, such as previous/next nodes, current position.
 
 [source, go]
 ----
