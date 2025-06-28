@@ -28,14 +28,14 @@ const (
 )
 
 type InitContainerStateLink struct {
-	next ChainItem
+	next ChainLink
 }
 
 func (ics *InitContainerStateLink) Execute(spec *specs.Spec) {
 	panic("implement me")
 }
 
-func (ics *InitContainerStateLink) SetNext(next ChainItem) {
+func (ics *InitContainerStateLink) SetNext(next ChainLink) {
 	ics.next = next
 }
 
