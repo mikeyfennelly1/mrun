@@ -1,0 +1,17 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -o /bin/mrun main.go
+    desc: Build application binary and store to /bin/mrun
+
+  test:
+    cmds:
+      - go test ./src/...
+    desc: Run all tests
+
+  docs:
+    desc: Serve godoc
+    cmds:
+      - godoc -http=:6060
