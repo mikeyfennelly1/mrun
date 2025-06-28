@@ -2,48 +2,24 @@ package cmd
 
 import (
 	"github.com/mikeyfennelly1/mrun/src"
-	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/syndtr/gocapability/capability"
 )
 
 var Start = &cobra.Command{
 	Use:   "start",
 	Short: "Start an isolated environment.",
 	Run: func(cmd *cobra.Command, args []string) {
-		var spec specs.Spec
+		initChain := getInitChain()
 
-		config, err := src.parseConfig("./config.json")
+		spec, err := src.GetSpec()
 		if err != nil {
-			logrus.Fatalf("could not find file ./config.json")
+			logrus.Fatalf(err.Error())
 			logrus.Exit(1)
 		}
-		// create a random containerID
-		containerID := src.NewContainerID()
-		// initialize a new cgroup for the container based on the spec
-		err = src.InitCgroup(containerID, spec)
-		if err != nil {
-			logrus.Fatalf("error initializing cgroup: %v", err)
-		}
 
-		err = src.MoveCurrentPidToCgroup(containerID)
-		if err != nil {
-			logrus.Errorf("error moving process into cgroup: %v", err)
-			return
-		}
-
-		// set and apply capability sets to the process
-		src.SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
-		src.SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
-		src.SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
-		src.SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
-
-		err = src.InitContainerStateDirAndFile(containerID, spec)
-		if err != nil {
-			logrus.Errorf("could not intialize container state: %v", err)
-			return
-		}
+		//TODO decide whether we should get and validate the config outside the init chain or not
+		initChain.Execute(spec)
 
 		// execs the process with the current process program
 		// new program is running in new namespaces in chroot jail.
@@ -55,11 +31,25 @@ var Start = &cobra.Command{
 	},
 }
 
-func getInitChain() src.ChainItem {
+func getInitChain() src.ChainLink {
 	// instantiate container state
 	parseConfigLink := &src.ParseConfigLink{}
 
-	parseConfigLink.SetNext()
+	//TODO init a containerID and pass to InitCgroup. InitCgroup needs to name
+	// the cgroup after the containerId.
+	// This initContainerState should instantiate an in-memory singleton for the
+	// container state to be used by relevant functions, as well as state.json, which
+	// is to be updated as init lifecycle progresses.
+	initContainerStateLink := &src.InitContainerStateLink{}
+	parseConfigLink.SetNext(initContainerStateLink)
+
+	//TODO move the process into control group created from InitCgroupLink.
+	initCgroupLink := &src.InitCgroupLink{}
+	initContainerStateLink.SetNext(initCgroupLink)
+
+	//TODO pass containerId to function that creates container state directory/file.
+	applyCapsetLink := &src.ApplyCapsetLink{}
+	initCgroupLink.SetNext(applyCapsetLink)
 
 	return parseConfigLink
 }
