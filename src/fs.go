@@ -8,6 +8,19 @@ import (
 	"os"
 )
 
+type CreateFileSystemLink struct {
+	next ChainLink
+}
+
+func (c CreateFileSystemLink) Execute(spec *specs.Spec) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c CreateFileSystemLink) SetNext(item ChainLink) {
+	c.next = item
+}
+
 func CreateFileSystem(spec specs.Spec) error {
 	if os.Geteuid() != 0 {
 		fmt.Printf("not superuser\n")
