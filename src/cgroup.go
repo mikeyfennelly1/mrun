@@ -1,4 +1,4 @@
-package cgroup
+package src
 
 import (
 	"fmt"
@@ -12,6 +12,7 @@ const (
 	mrunCgroupSlice = "/"
 )
 
+// InitCgroup creates a new 'blank' control group for the container.
 func InitCgroup(containerID string, spec specs.Spec) error {
 	m, err := createNewCgroupForContainer(containerID, *spec.Linux.Resources)
 	if err != nil {
@@ -28,6 +29,7 @@ func InitCgroup(containerID string, spec specs.Spec) error {
 	return nil
 }
 
+// MoveCurrentPidToCgroup moves this program's process into a control group.
 func MoveCurrentPidToCgroup(containerID string) error {
 	pid := os.Getpid()
 
@@ -44,7 +46,6 @@ func MoveCurrentPidToCgroup(containerID string) error {
 	return nil
 }
 
-// InitCgroup creates a new control group for the container.
 func createNewCgroupForContainer(containerID string, specResources specs.LinuxResources) (*cgroup2.Manager, error) {
 	// get cgroup2.Resources obj from specs.LinuxResources obj
 	resources := cgroup2.ToResources(&specResources)

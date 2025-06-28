@@ -3,8 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/src/fs"
-	"github.com/mikeyfennelly1/mrun/src/proc"
+	"github.com/mikeyfennelly1/mrun/src"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -49,16 +48,16 @@ var Chroot = &cobra.Command{
 			logrus.Warn("unable to set gid of process in container to %d\n", uid)
 		}
 
-		proc.SetRLIMITsForProcess(spec.Process.Rlimits)
+		src.SetRLIMITsForProcess(spec.Process.Rlimits)
 
-		proc.SetEnvVars(spec.Process.Env)
+		src.SetEnvVars(spec.Process.Env)
 
 		err = syscall.Sethostname([]byte(spec.Hostname))
 		if err != nil {
 			logrus.Warn(err)
 		}
 
-		err = fs.CreateFileSystem(spec)
+		err = src.CreateFileSystem(spec)
 		execSh()
 	},
 }

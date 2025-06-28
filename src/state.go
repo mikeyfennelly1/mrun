@@ -27,6 +27,18 @@ const (
 	letters      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
+type InitContainerStateLink struct {
+	next ChainItem
+}
+
+func (ics *InitContainerStateLink) Execute(spec *specs.Spec) {
+	panic("implement me")
+}
+
+func (ics *InitContainerStateLink) SetNext(next ChainItem) {
+	ics.next = next
+}
+
 // InitContainerStateDirAndFile creates a directory in state
 // directory /var/run/mrun/<container-id> and a file
 // state.json in that directory. i.e

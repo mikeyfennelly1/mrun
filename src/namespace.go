@@ -1,4 +1,4 @@
-package namespace
+package src
 
 import (
 	"encoding/json"
@@ -10,7 +10,13 @@ import (
 	"syscall"
 )
 
-type ProcNamespaceProfile struct {
+type NamespaceChainItem struct{}
+
+func (nci *NamespaceChainItem) execute(spec *specs.Spec) {
+
+}
+
+type processNamespaceProfile struct {
 	// the binary to run when we enter the new namespace
 	// if left as an empty string, process binary will be bash
 	ProcessBinary string
@@ -20,7 +26,7 @@ type ProcNamespaceProfile struct {
 	Namespaces []specs.LinuxNamespace
 }
 
-func GetIsolatedProcessProfile() (*ProcNamespaceProfile, error) {
+func GetIsolatedProcessProfile() (*processNamespaceProfile, error) {
 	jsonNamespaces := `[
 			{ "type": "pid" },
 			{ "type": "network" },
@@ -36,14 +42,14 @@ func GetIsolatedProcessProfile() (*ProcNamespaceProfile, error) {
 		return nil, err
 	}
 
-	var testNamespaceProfile ProcNamespaceProfile
+	var testNamespaceProfile processNamespaceProfile
 	testNamespaceProfile.Namespaces = testNamespaces
 	testNamespaceProfile.ProcessBinary = ""
 
 	return &testNamespaceProfile, nil
 }
 
-func (p *ProcNamespaceProfile) StartShellInNewNamespaces() {
+func (p *processNamespaceProfile) StartShellInNewNamespaces() {
 	cmd := exec.Command("/bin/sh")
 
 	// Set the command to run in a new mount namespace
@@ -62,7 +68,7 @@ func (p *ProcNamespaceProfile) StartShellInNewNamespaces() {
 	}
 }
 
-func (p *ProcNamespaceProfile) GetCloneFlagBitMask() uintptr {
+func (p *processNamespaceProfile) GetCloneFlagBitMask() uintptr {
 	result := 0
 
 	for _, ns := range p.Namespaces {

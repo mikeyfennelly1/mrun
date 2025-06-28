@@ -1,8 +1,7 @@
-package fs
+package src
 
 import (
 	"encoding/json"
-	"github.com/mikeyfennelly1/mrun/src/namespace"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/stretchr/testify/require"
 	"os"
@@ -86,7 +85,7 @@ func TestCreateFileSystem(t *testing.T) {
 
 	// enter new namespaces
 	// at this point - can still see everything
-	pNS, err := namespace.GetIsolatedProcessProfile()
+	pNS, err := GetIsolatedProcessProfile()
 	require.NoError(t, err)
 
 	// start another process for the

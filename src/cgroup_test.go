@@ -1,4 +1,4 @@
-package cgroup
+package src
 
 import (
 	"encoding/json"

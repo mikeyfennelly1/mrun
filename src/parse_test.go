@@ -1,4 +1,4 @@
-package parse
+package src
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseConfig(t *testing.T) {
-	spec, err := ParseConfig("./config.json")
+	spec, err := parseConfig("./config.json")
 	require.NoError(t, err)
 	fmt.Printf("%v", spec)
 }

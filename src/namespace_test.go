@@ -1,4 +1,4 @@
-package namespace
+package src
 
 import (
 	"encoding/json"
@@ -53,7 +53,7 @@ func TestNSEnter(t *testing.T) {
 		return
 	}
 
-	var testNamespaceProfile ProcNamespaceProfile
+	var testNamespaceProfile processNamespaceProfile
 	testNamespaceProfile.Namespaces = testNamespaces
 	testNamespaceProfile.ProcessBinary = ""
 

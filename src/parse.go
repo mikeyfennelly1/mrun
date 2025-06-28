@@ -1,4 +1,4 @@
-package parse
+package src
 
 import (
 	"encoding/json"
@@ -6,7 +6,19 @@ import (
 	"os"
 )
 
-func ParseConfig(pathToConfig string) (*specs.Spec, error) {
+type ParseConfigLink struct {
+	next ChainItem
+}
+
+func (pc *ParseConfigLink) Execute(spec *specs.Spec) {
+	panic("implement me")
+}
+
+func (pc *ParseConfigLink) SetNext(next ChainItem) {
+	pc.next = next
+}
+
+func parseConfig(pathToConfig string) (*specs.Spec, error) {
 	configData, err := os.ReadFile(pathToConfig)
 	if err != nil {
 		return nil, err
