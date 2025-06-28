@@ -3,20 +3,16 @@
 
 == Overview
 
-mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtime written in Go. It contains a package that you can download for interacting with the cgroup filesystem interface, documentation about container technology, a command line to use the tool and _more to come_...
+mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtime written in Go.
 
 [NOTE]
 ====
-This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
+This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independent. Do not rely on this runtime.
 ====
-
-=== What is a container?
-
-The Open Container Initiative defines a container as
 
 == System prerequisites for using mrun
 
-My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
+My system is Ubuntu 22.04 (Jammy) using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
 
 systemd, a filesystem that supports extended attributes and a Kernel newer than v4.5 - to have cgroupv2 support. If you are currently running Linux, this configuration is more than likely already the case for your setup, but just to make note of these in case of unexpected behaviors.
 
@@ -69,3 +65,62 @@ During the creation of this project I did a lot of reading on containerization. 
 The docs folder has reading about OCI standards and Kernel features that underpin container technology like control groups (cgroups).
 
 Enjoy!
+
+=== Newcomer
+- Docker and containers.
+- Containers vs Virtual Machines (VMs)
+
+=== Intermediate
+- Overview: What _actually_ is a container?
+- Container Engines vs Container Runtimes.
+- Container bundles.
+- Container configuration files.
+- How runtimes manage multiple containers.
+
+=== Advanced
+==== Visibility Limitations
+- Namespaces: Basis for process isolation.
+- Namespaces: Virtual Network Devices for inter-namespace comms.
+- Namespaces: Virtual Network Devices for inter-namespace comms.
+
+==== Resource restrictions
+- cgroups: Control Groups (cgroups) - An overview of resource restriction.
+- cgroups: cgroupV1 vs cgroupV2 - cgroup filesystem hierarchy basics.
+- cgroup hierarchy with systemd.
+- cgroups: controllers.
+- cgroups: .
+- Intel RDT:
+- Personality
+
+==== Filesystem
+- Filesystem: chroot jails.
+- Filesystem: Masked paths.
+- Root Filesystem Propagation.
+- OverlayFS
+- Bind mounts and write-through
+
+==== Container Security
+- Capabilities.
+- AppArmor.
+- SELinux.
+- Seccomp Filtering.
+- User and group mapping.
+
+=== Bite-size practicals for container internals
+- Using `runc`.
+- Using `containerd`.
+- Creating virtual network devices from the command line.
+- Viewing namespace inodes for containerized processes.
+- Viewing container manifests with the `skopeo` command line tool.
+- Using the `nsenter` command line tool.
+
+=== What is a container?
+
+The Open Container Initiative defines a container in the link:https://github.com/opencontainers/runtime-spec/blob/main/principles.md[**5 Principles of Standard Containers**].
+
+==== The use of the word 'container'
+===== Abstract argument _for_ the terminology 'container':
+A container is a nice word for what a container does - it is descriptive of the function of a container - a method of packaging that doesn't care about what is in it and also doesn't let the world outside the packaging, see inside.
+
+===== Abstract argument _against_ the terminology 'container':
+The word container is somewhat misleading in some respects though. It does infer that the packaging is material, and that it is one single indivisible unit. Yes, it does come together to provide one nice veneer over your application, but the veneer is an aggregate of discrete
