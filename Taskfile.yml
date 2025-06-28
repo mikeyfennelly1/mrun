@@ -14,4 +14,5 @@ tasks:
   docs:
     desc: Serve godoc
     cmds:
+      - echo "opening godocs at http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/src/"
       - godoc -http=:6060
