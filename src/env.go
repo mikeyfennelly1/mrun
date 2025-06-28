@@ -1,11 +1,24 @@
 package src
 
 import (
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"strings"
 )
 
-func SetEnvVars(envVars []string) {
+type SetEnvVarsLink struct {
+	next ChainLink
+}
+
+func (sev SetEnvVarsLink) Execute(spec *specs.Spec) {
+	panic("implement me")
+}
+
+func (sev SetEnvVarsLink) SetNext(next ChainLink) {
+	sev.next = next
+}
+
+func setEnvVars(envVars []string) {
 	for _, envVar := range envVars {
 		setEnvVar(envVar)
 	}
