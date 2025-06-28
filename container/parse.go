@@ -11,8 +11,9 @@ type ParseConfigLink struct {
 	next ChainLink
 }
 
-func (pc *ParseConfigLink) Execute(spec *specs.Spec) {
+func (pc *ParseConfigLink) Execute(spec *specs.Spec) error {
 	panic("implement me")
+	return nil
 }
 
 func (pc *ParseConfigLink) SetNext(next ChainLink) {

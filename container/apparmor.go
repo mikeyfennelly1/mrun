@@ -6,9 +6,10 @@ type SetAppArmorLink struct {
 	next ChainLink
 }
 
-func (s SetAppArmorLink) Execute(spec *specs.Spec) {
+func (s SetAppArmorLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
+	return nil
 }
 
 func (s SetAppArmorLink) SetNext(link ChainLink) {

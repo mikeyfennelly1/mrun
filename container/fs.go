@@ -12,9 +12,8 @@ type CreateFileSystemLink struct {
 	next ChainLink
 }
 
-func (c CreateFileSystemLink) Execute(spec *specs.Spec) {
-	//TODO implement me
-	panic("implement me")
+func (c CreateFileSystemLink) Execute(spec *specs.Spec) error {
+	return nil
 }
 
 func (c CreateFileSystemLink) SetNext(item ChainLink) {
@@ -28,7 +27,7 @@ func createFileSystem(spec specs.Spec) error {
 
 	// iterate through spec.Mounts, mounting each visited item
 	for index, mount := range spec.Mounts {
-		err := mountInContainerFS(mount)
+		err := mountInContainer(mount)
 		if err != nil {
 			// should there be an error,
 			// iterate back through all mounted filesystems and unmount each
@@ -50,6 +49,8 @@ func createFileSystem(spec specs.Spec) error {
 	return nil
 }
 
+// 'masks' the mount point of path by mounting an empty & read only tmpfs
+// filesystem on that mount point
 func maskPath(path string) error {
 	err := unix.Mount("tmpfs", path, "tmpfs", unix.MS_RDONLY, "size=0")
 	if err != nil {
@@ -59,7 +60,7 @@ func maskPath(path string) error {
 	return nil
 }
 
-func mountInContainerFS(fileSystemToMount specs.Mount) error {
+func mountInContainer(fileSystemToMount specs.Mount) error {
 	// check if the specified mount point exists
 	_, err := os.Stat(fileSystemToMount.Destination)
 	if os.IsNotExist(err) {
@@ -84,6 +85,7 @@ func mountInContainerFS(fileSystemToMount specs.Mount) error {
 	return nil
 }
 
+// gets a bitmask for mount options for a mount.
 func getBitMaskForMountOptions(mountOptions []string) uintptr {
 	var result uintptr
 

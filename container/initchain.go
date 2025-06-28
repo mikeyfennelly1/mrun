@@ -5,6 +5,6 @@ import (
 )
 
 type ChainLink interface {
-	Execute(spec *specs.Spec)
+	Execute(spec *specs.Spec) error
 	SetNext(next ChainLink)
 }

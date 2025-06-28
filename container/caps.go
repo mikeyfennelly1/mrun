@@ -13,12 +13,13 @@ type ApplyCapsetLink struct {
 	next ChainLink
 }
 
-func (a *ApplyCapsetLink) Execute(spec *specs.Spec) {
+func (a *ApplyCapsetLink) Execute(spec *specs.Spec) error {
 	// set and apply capability sets to the process
 	SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
 	SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
 	SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
 	SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
+	return nil
 }
 
 func (a *ApplyCapsetLink) SetNext(item ChainLink) {

@@ -16,9 +16,10 @@ type InitCgroupLink struct {
 	next ChainLink
 }
 
-func (i *InitCgroupLink) Execute(spec *specs.Spec) {
+func (i *InitCgroupLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
+	return nil
 }
 
 func (i *InitCgroupLink) SetNext(next ChainLink) {

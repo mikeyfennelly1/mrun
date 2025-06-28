@@ -10,8 +10,9 @@ type SetEnvVarsLink struct {
 	next ChainLink
 }
 
-func (sev SetEnvVarsLink) Execute(spec *specs.Spec) {
+func (sev SetEnvVarsLink) Execute(spec *specs.Spec) error {
 	panic("implement me")
+	return nil
 }
 
 func (sev SetEnvVarsLink) SetNext(next ChainLink) {

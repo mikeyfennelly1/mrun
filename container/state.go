@@ -21,18 +21,18 @@ import (
 )
 
 const (
-	varRunMrun   = "/var/run/mrun/"
-	stateDotJSON = "state.json"
-	ociVersion   = "0.2.0"
-	letters      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	varRunMrun = "/var/run/mrun/"
+	ociVersion = "0.2.0"
+	letters    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
 type InitContainerStateLink struct {
 	next ChainLink
 }
 
-func (ics *InitContainerStateLink) Execute(spec *specs.Spec) {
+func (ics *InitContainerStateLink) Execute(spec *specs.Spec) error {
 	panic("implement me")
+	return nil
 }
 
 func (ics *InitContainerStateLink) SetNext(next ChainLink) {
