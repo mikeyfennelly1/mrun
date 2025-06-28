@@ -9,6 +9,23 @@ import (
 	"strings"
 )
 
+type ApplyCapsetLink struct {
+	next ChainLink
+}
+
+func (a *ApplyCapsetLink) Execute(spec *specs.Spec) {
+	// set and apply capability sets to the process
+	SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
+	SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
+	SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
+	SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
+}
+
+func (a *ApplyCapsetLink) SetNext(item ChainLink) {
+	//TODO implement me
+	panic("implement me")
+}
+
 // SetFileCapabilities for the binary for the init process of
 // the container. This requires usage of a file system that
 // supports extended file attributes.
