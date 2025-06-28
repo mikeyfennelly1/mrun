@@ -12,6 +12,19 @@ const (
 	mrunCgroupSlice = "/"
 )
 
+type InitCgroupLink struct {
+	next ChainLink
+}
+
+func (i *InitCgroupLink) Execute(spec *specs.Spec) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (i *InitCgroupLink) SetNext(next ChainLink) {
+	i.next = next
+}
+
 // InitCgroup creates a new 'blank' control group for the container.
 func InitCgroup(containerID string, spec specs.Spec) error {
 	m, err := createNewCgroupForContainer(containerID, *spec.Linux.Resources)
