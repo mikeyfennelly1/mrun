@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mikeyfennelly1/mrun/src"
+	"github.com/mikeyfennelly1/mrun/container"
 	"github.com/spf13/cobra"
 )
 
@@ -11,7 +11,7 @@ var Chroot = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		postChrootInitChain := getPostChrootInitChain()
 
-		spec, err := src.GetSpec()
+		spec, err := container.GetSpec()
 		if err != nil {
 			return
 		}
@@ -20,25 +20,25 @@ var Chroot = &cobra.Command{
 	},
 }
 
-func getPostChrootInitChain() src.ChainLink {
-	chrootLink := src.ChrootLink{}
+func getPostChrootInitChain() container.ChainLink {
+	chrootLink := container.ChrootLink{}
 
-	changeProcRootLink := src.ChangeProcessDirToNewRootLink{}
+	changeProcRootLink := container.ChangeProcessDirToNewRootLink{}
 	chrootLink.SetNext(changeProcRootLink)
 
-	setUsersAndGroupsLink := src.SetUsersAndGroupsLink{}
+	setUsersAndGroupsLink := container.SetUsersAndGroupsLink{}
 	changeProcRootLink.SetNext(setUsersAndGroupsLink)
 
-	setRlimitLink := src.SetRLIMITLink{}
+	setRlimitLink := container.SetRLIMITLink{}
 	setUsersAndGroupsLink.SetNext(setUsersAndGroupsLink)
 
-	setEnvVarsLink := src.SetEnvVarsLink{}
+	setEnvVarsLink := container.SetEnvVarsLink{}
 	setRlimitLink.SetNext(setEnvVarsLink)
 
-	createFileSystemLink := src.CreateFileSystemLink{}
+	createFileSystemLink := container.CreateFileSystemLink{}
 	setEnvVarsLink.SetNext(createFileSystemLink)
 
-	execBinaryLink := src.ExecBinaryLink{}
+	execBinaryLink := container.ExecBinaryLink{}
 	createFileSystemLink.SetNext(execBinaryLink)
 
 	return &chrootLink

@@ -1,4 +1,4 @@
-package src
+package container
 
 import (
 	"github.com/opencontainers/runtime-spec/specs-go"

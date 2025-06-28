@@ -1,4 +1,4 @@
-package src
+package container
 
 import (
 	"github.com/opencontainers/runtime-spec/specs-go"
@@ -6,5 +6,5 @@ import (
 
 type ChainLink interface {
 	Execute(spec *specs.Spec)
-	SetNext(ChainLink)
+	SetNext(next ChainLink)
 }

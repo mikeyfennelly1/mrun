@@ -1,4 +1,4 @@
-package src
+package container
 
 import (
 	"encoding/json"
@@ -10,9 +10,11 @@ import (
 	"syscall"
 )
 
-type NamespaceChainItem struct{}
+type NamespaceChainLink struct {
+	next ChainLink
+}
 
-func (nci *NamespaceChainItem) execute(spec *specs.Spec) {
+func (nci *NamespaceChainLink) execute(spec *specs.Spec) {
 
 }
 

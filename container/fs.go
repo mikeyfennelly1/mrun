@@ -1,4 +1,4 @@
-package src
+package container
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ func (c CreateFileSystemLink) SetNext(item ChainLink) {
 	c.next = item
 }
 
-func CreateFileSystem(spec specs.Spec) error {
+func createFileSystem(spec specs.Spec) error {
 	if os.Geteuid() != 0 {
 		fmt.Printf("not superuser\n")
 	}
@@ -112,7 +112,7 @@ func getBitMaskForMountOptions(mountOptions []string) uintptr {
 	return result
 }
 
-func MaskPaths(paths []string) {
+func maskPaths(paths []string) {
 	for _, path := range paths {
 		err := unix.Mount("tmpfs", path, "tmpfs", 0, "")
 		if err != nil {
@@ -121,7 +121,7 @@ func MaskPaths(paths []string) {
 	}
 }
 
-func ReadOnlyPaths(paths []string) {
+func readOnlyPaths(paths []string) {
 	for _, path := range paths {
 		err := os.Chmod(path, 0555)
 		if err != nil {

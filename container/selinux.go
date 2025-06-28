@@ -1,17 +1,17 @@
-package src
+package container
 
 import "github.com/opencontainers/runtime-spec/specs-go"
 
-type SetAppArmorLink struct {
+type SetSELinuxLabelsLink struct {
 	next ChainLink
 }
 
-func (s SetAppArmorLink) Execute(spec *specs.Spec) {
+func (s SetSELinuxLabelsLink) Execute(spec *specs.Spec) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s SetAppArmorLink) SetNext(link ChainLink) {
+func (s SetSELinuxLabelsLink) SetNext(item ChainLink) {
 	//TODO implement me
 	panic("implement me")
 }

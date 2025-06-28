@@ -7,7 +7,7 @@
 //
 // see docs about mrun standard conventions for more.
 
-package src
+package container
 
 import (
 	"encoding/json"
