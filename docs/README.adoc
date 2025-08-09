@@ -78,6 +78,3 @@ Located at `/var/run/mrun/<container-id>/state.json`.
 === Location of container state information, global
 
 *There is no global state file.* This is retrieved programatically by mrun.
-
-== Control group location
-

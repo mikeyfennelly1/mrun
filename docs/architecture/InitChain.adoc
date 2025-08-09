@@ -47,3 +47,5 @@ type InitChainNode interface {
 	Rollback() // should only be usable if this node has state
 }
 ----
+
+== Control group location
