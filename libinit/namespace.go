@@ -1,4 +1,4 @@
-package container
+package libinit
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package container
+package libinit
 
 import (
 	"github.com/opencontainers/runtime-spec/specs-go"

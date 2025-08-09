@@ -1,6 +1,11 @@
 version: '3'
 
 tasks:
+  default:
+    desc: list all task commands by default when specific subcommand is omitted.
+    cmds:
+      - task --list | grep -v default
+
   build:
     cmds:
       - go build -o /bin/mrun main.go
@@ -15,4 +20,5 @@ tasks:
     desc: Serve godoc
     cmds:
       - echo "opening godocs at http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/src/"
-      - godoc -http=:6060
+      - godoc -http=:6060 &
+      - open http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/

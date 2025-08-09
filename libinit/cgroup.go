@@ -1,17 +1,18 @@
-package container
+package libinit
 
 import (
 	"fmt"
 	"github.com/containerd/cgroups/v3/cgroup2"
-	"github.com/containerd/cgroups/v3/cgroup2/stats"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"os"
 )
 
 const (
-	mrunCgroupSlice = "/"
+	MrunCgroupSlice = "/"
 )
 
+// InitCgroupLink is the cgroup initializing implementation of ChainLink.
+// It is the only interface for initializing a cgroup.
 type InitCgroupLink struct {
 	next ChainLink
 }
@@ -47,7 +48,7 @@ func InitCgroup(containerID string, spec specs.Spec) error {
 func MoveCurrentPidToCgroup(containerID string) error {
 	pid := os.Getpid()
 
-	m, err := cgroup2.LoadSystemd(mrunCgroupSlice, getGroupNameForContainerID(containerID))
+	m, err := cgroup2.LoadSystemd(MrunCgroupSlice, getGroupNameForContainerID(containerID))
 	if err != nil {
 		return err
 	}
@@ -66,7 +67,7 @@ func createNewCgroupForContainer(containerID string, specResources specs.LinuxRe
 
 	groupName := getGroupNameForContainerID(containerID)
 	// create the control group as direct descendant of root user slice.
-	m, err := cgroup2.NewSystemd(mrunCgroupSlice, groupName, -1, resources)
+	m, err := cgroup2.NewSystemd(MrunCgroupSlice, groupName, -1, resources)
 	if err != nil {
 		return nil, err
 	}
@@ -81,18 +82,4 @@ func createNewCgroupForContainer(containerID string, specResources specs.LinuxRe
 
 func getGroupNameForContainerID(containerID string) string {
 	return fmt.Sprintf("%s.slice", containerID)
-}
-
-func GetResourceUsageInformation(containerID string) (*stats.Metrics, error) {
-	cg, err := cgroup2.LoadSystemd(mrunCgroupSlice, containerID)
-	if err != nil {
-		return nil, err
-	}
-
-	stat, err := cg.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	return stat, nil
 }

@@ -7,7 +7,7 @@
 //
 // see docs about mrun standard conventions for more.
 
-package container
+package libinit
 
 import (
 	"encoding/json"
