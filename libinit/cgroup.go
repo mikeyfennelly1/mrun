@@ -27,8 +27,8 @@ func (i *InitCgroupLink) SetNext(next ChainLink) {
 	i.next = next
 }
 
-// InitCgroup creates a new 'blank' control group for the container.
-func InitCgroup(containerID string, spec specs.Spec) error {
+// initCgroup creates a new 'blank' control group for the container.
+func initCgroup(containerID string, spec specs.Spec) error {
 	m, err := createNewCgroupForContainer(containerID, *spec.Linux.Resources)
 	if err != nil {
 		return fmt.Errorf("could not initialize cgroup for containerID %s: %v", containerID, err)
@@ -44,8 +44,8 @@ func InitCgroup(containerID string, spec specs.Spec) error {
 	return nil
 }
 
-// MoveCurrentPidToCgroup moves this program's process into a control group.
-func MoveCurrentPidToCgroup(containerID string) error {
+// moveCurrentPidToCgroup moves this program's process into a control group.
+func moveCurrentPidToCgroup(containerID string) error {
 	pid := os.Getpid()
 
 	m, err := cgroup2.LoadSystemd(MrunCgroupSlice, getGroupNameForContainerID(containerID))

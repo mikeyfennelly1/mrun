@@ -6,7 +6,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func SetRLIMITsForProcess(processRlimits []specs.POSIXRlimit) {
+func setRLIMITsForProcess(processRlimits []specs.POSIXRlimit) {
 	for _, rlimit := range processRlimits {
 		var thisRlim unix.Rlimit
 		thisRlim.Cur = rlimit.Soft

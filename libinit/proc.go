@@ -56,7 +56,7 @@ type SetRLIMITLink struct {
 }
 
 func (s SetRLIMITLink) Execute(spec *specs.Spec) error {
-	SetRLIMITsForProcess(spec.Process.Rlimits)
+	setRLIMITsForProcess(spec.Process.Rlimits)
 	return nil
 }
 

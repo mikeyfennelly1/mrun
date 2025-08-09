@@ -15,10 +15,10 @@ type ApplyCapsetLink struct {
 
 func (a *ApplyCapsetLink) Execute(spec *specs.Spec) error {
 	// set and apply capability sets to the process
-	SetAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
-	SetAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
-	SetAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
-	SetAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
+	setAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
+	setAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
+	setAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
+	setAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
 	return nil
 }
 
@@ -27,12 +27,12 @@ func (a *ApplyCapsetLink) SetNext(item ChainLink) {
 	panic("implement me")
 }
 
-// SetFileCapabilities for the binary for the init process of
+// setFileCapabilities for the binary for the init process of
 // the container. This requires usage of a file system that
 // supports extended file attributes.
 //
 // https://man7.org/linux/man-pages/man7/xattr.7.html
-func SetFileCapabilities(spec specs.Spec, filename string) error {
+func setFileCapabilities(spec specs.Spec, filename string) error {
 	// apply permitted capabilities to /bin/sh
 	setAndApplyCapsetToFile(capability.PERMITTED,
 		spec.Process.Capabilities.Permitted,
@@ -55,16 +55,16 @@ func setAndApplyCapsetToFile(capset capability.CapType, capsetCaps []string, fil
 	panic("Implement setAndApplyCapsetToFile")
 }
 
-func SetAndApplyCapsetToCurrentPid(capabilitySet capability.CapType, capabilities []string) {
+func setAndApplyCapsetToCurrentPid(capabilitySet capability.CapType, capabilities []string) {
 	for _, thisCap := range capabilities {
-		err := SetAndApplyCapToCurrentPid(capabilitySet, getCap(thisCap))
+		err := setAndApplyCapToCurrentPid(capabilitySet, getCap(thisCap))
 		if err != nil {
 			logrus.Errorf("%v", err)
 		}
 	}
 }
 
-func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capability.Cap) error {
+func setAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capability.Cap) error {
 	pid := os.Getpid()
 	procCaps, err := capability.NewPid2(pid)
 	if err != nil {
@@ -88,7 +88,7 @@ func SetAndApplyCapToCurrentPid(capabilitySet capability.CapType, which capabili
 	return nil
 }
 
-func PrintCapabilityStatus() error {
+func printCapabilityStatus() error {
 	filename := fmt.Sprintf("/proc/%d/status", os.Getpid())
 	contents, err := os.ReadFile(filename)
 	if err != nil {

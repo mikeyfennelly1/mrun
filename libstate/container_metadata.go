@@ -1,4 +1,4 @@
-package libinit
+package libstate
 
 import (
 	"sync"
