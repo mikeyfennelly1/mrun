@@ -28,7 +28,7 @@ type processNamespaceProfile struct {
 	Namespaces []specs.LinuxNamespace
 }
 
-func GetIsolatedProcessProfile() (*processNamespaceProfile, error) {
+func getIsolatedProcessProfile() (*processNamespaceProfile, error) {
 	jsonNamespaces := `[
 			{ "type": "pid" },
 			{ "type": "network" },
@@ -51,12 +51,12 @@ func GetIsolatedProcessProfile() (*processNamespaceProfile, error) {
 	return &testNamespaceProfile, nil
 }
 
-func (p *processNamespaceProfile) StartShellInNewNamespaces() {
+func (p *processNamespaceProfile) startShellInNewNamespaces() {
 	cmd := exec.Command("/bin/sh")
 
 	// Set the command to run in a new mount namespace
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: p.GetCloneFlagBitMask(),
+		Cloneflags: p.getCloneFlagBitMask(),
 	}
 
 	// Set input/output to inherit from current process
@@ -70,7 +70,7 @@ func (p *processNamespaceProfile) StartShellInNewNamespaces() {
 	}
 }
 
-func (p *processNamespaceProfile) GetCloneFlagBitMask() uintptr {
+func (p *processNamespaceProfile) getCloneFlagBitMask() uintptr {
 	result := 0
 
 	for _, ns := range p.Namespaces {
@@ -99,10 +99,10 @@ func (p *processNamespaceProfile) GetCloneFlagBitMask() uintptr {
 	return uintptr(result)
 }
 
-// RestartInNewNS execs the current program, but in new namespaces
+// restartInNewNS execs the current program, but in new namespaces
 // according to the config file namespaces.
-func RestartInNewNS(args ...string) error {
-	p, err := GetIsolatedProcessProfile()
+func restartInNewNS(args ...string) error {
+	p, err := getIsolatedProcessProfile()
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func RestartInNewNS(args ...string) error {
 
 	// Set the command to run in a new mount namespace
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: p.GetCloneFlagBitMask(),
+		Cloneflags: p.getCloneFlagBitMask(),
 	}
 
 	// Set input/output to standard io options
