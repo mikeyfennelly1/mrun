@@ -17,10 +17,4 @@
 //
 //   - Open Container Initiative Spec: https://github.com/mikeyfennelly1/mrun/tree/main/docs.
 //   - mrun architecture: https://github.com/mikeyfennelly1/mrun/tree/main/docs.
-//
-// # Package overviews
-//
-//   - cmd: mrun subcommands
-//   - libinit: A library for creating container InitChains
-//   - libstate: A library for managing state of containers on the host.
 package mrun
