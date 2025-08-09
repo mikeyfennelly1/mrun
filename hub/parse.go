@@ -1,14 +1,15 @@
-package libinit
+package hub
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/libinit"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"os"
 )
 
 type ParseConfigLink struct {
-	next ChainLink
+	next libinit.ChainLink
 }
 
 func (pc *ParseConfigLink) Execute(spec *specs.Spec) error {
@@ -16,7 +17,7 @@ func (pc *ParseConfigLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (pc *ParseConfigLink) SetNext(next ChainLink) {
+func (pc *ParseConfigLink) SetNext(next libinit.ChainLink) {
 	pc.next = next
 }
 
