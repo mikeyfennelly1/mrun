@@ -14,13 +14,13 @@ This runtime is created to be compatible with Linux operating systems that have 
 
 The Open Container Initiative (OCI) defines a container as a standardized, portable, and lightweight runtime environment for software that bundles an application and its dependencies, libraries, and configuration files.
 
+== Usage
+
 === System Prerequisites
 
 My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
 
 systemd, a filesystem that supports extended attributes and a Kernel newer than v4.5 - to have cgroupv2 support. If you are currently running Linux, this configuration is more than likely already the case for your setup, but just to make note of these in case of unexpected behaviors.
-
-== Usage
 
 === Spawning a container
 
