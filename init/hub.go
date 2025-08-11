@@ -1,5 +1,7 @@
 package init
 
+import "github.com/mikeyfennelly1/mrun/init/libinit"
+
 const configJsonPath = "./config.json"
 
 type HubInterface interface {
@@ -22,11 +24,11 @@ type HubInterface interface {
 
 	// GetSteps creates the init chain based on if it is currently
 	// being created already or not and returns the first link
-	GetSteps(isCreating bool) []ExecutableInitStep
+	GetSteps(isCreating bool) []libinit.ExecutableInitStep
 }
 
 type hub struct {
 	// initChain is a linked list of items to execute
 	// in sequence in order to complete this stage of init
-	InitChain ExecutableInitStep
+	InitChain libinit.ExecutableInitStep
 }

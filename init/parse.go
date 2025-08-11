@@ -3,12 +3,13 @@ package init
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/init/libinit"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"os"
 )
 
 type parseConfigLink struct {
-	next ExecutableInitStep
+	next libinit.ExecutableInitStep
 }
 
 func (pc *parseConfigLink) Execute(spec *specs.Spec) error {
@@ -16,7 +17,7 @@ func (pc *parseConfigLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (pc *parseConfigLink) SetNext(next ExecutableInitStep) {
+func (pc *parseConfigLink) SetNext(next libinit.ExecutableInitStep) {
 	pc.next = next
 }
 

@@ -1,4 +1,4 @@
-package init
+package libinit
 
 import (
 	"encoding/json"
