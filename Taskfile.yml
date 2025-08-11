@@ -21,4 +21,9 @@ tasks:
     cmds:
       - echo "opening godocs at http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/src/"
       - godoc -http=:6060 &
+      - task docopen
+
+  docopen:
+    desc: Open godoc documentation in local browser.
+    cmds:
       - open http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/
