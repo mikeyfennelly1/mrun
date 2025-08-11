@@ -1,7 +1,8 @@
-package libinit
+package libinitsteps
 
 import (
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/syndtr/gocapability/capability"
@@ -10,7 +11,7 @@ import (
 )
 
 type applyCapsetLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (a *applyCapsetLink) Execute(spec *specs.Spec) error {
@@ -22,7 +23,7 @@ func (a *applyCapsetLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (a *applyCapsetLink) SetNext(item ExecutableInitStep) {
+func (a *applyCapsetLink) SetNext(item init.Step) {
 	//TODO implement me
 	panic("implement me")
 }

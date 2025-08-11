@@ -1,7 +1,8 @@
-package libinit
+package libinitsteps
 
 import (
 	"encoding/json"
+	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"golang.org/x/sys/unix"
 	"log"
@@ -11,7 +12,7 @@ import (
 )
 
 type namespaceLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (nci *namespaceLink) execute(spec *specs.Spec) {

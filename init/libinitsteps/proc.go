@@ -1,13 +1,14 @@
-package libinit
+package libinitsteps
 
 import (
+	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"syscall"
 )
 
 type chrootLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (c chrootLink) Execute(spec *specs.Spec) error {
@@ -16,13 +17,13 @@ func (c chrootLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (c chrootLink) SetNext(item ExecutableInitStep) {
+func (c chrootLink) SetNext(item init.Step) {
 	//TODO implement me
 	c.next = item
 }
 
 type changeProcessDirToNewRootLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (c changeProcessDirToNewRootLink) Execute(spec *specs.Spec) error {
@@ -31,13 +32,13 @@ func (c changeProcessDirToNewRootLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (c changeProcessDirToNewRootLink) SetNext(item ExecutableInitStep) {
+func (c changeProcessDirToNewRootLink) SetNext(item init.Step) {
 	//TODO implement me
 	panic("implement me")
 }
 
 type setUsersAndGroupsLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (s setUsersAndGroupsLink) Execute(spec *specs.Spec) error {
@@ -46,13 +47,13 @@ func (s setUsersAndGroupsLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (s setUsersAndGroupsLink) SetNext(item ExecutableInitStep) {
+func (s setUsersAndGroupsLink) SetNext(item init.Step) {
 	//TODO implement me
 	s.next = item
 }
 
 type setRLIMITLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (s setRLIMITLink) Execute(spec *specs.Spec) error {
@@ -60,13 +61,13 @@ func (s setRLIMITLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (s setRLIMITLink) SetNext(item ExecutableInitStep) {
+func (s setRLIMITLink) SetNext(item init.Step) {
 	//TODO implement me
 	s.next = item
 }
 
 type setHostnameLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (s setHostnameLink) Execute(spec *specs.Spec) error {
@@ -77,13 +78,13 @@ func (s setHostnameLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (s setHostnameLink) SetNext(item ExecutableInitStep) {
+func (s setHostnameLink) SetNext(item init.Step) {
 	//TODO implement me
 	panic("implement me")
 }
 
 type execBinaryLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (e execBinaryLink) Execute(spec *specs.Spec) error {
@@ -93,7 +94,7 @@ func (e execBinaryLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (e execBinaryLink) SetNext(item ExecutableInitStep) {
+func (e execBinaryLink) SetNext(item init.Step) {
 	//TODO implement me
 	panic("implement me")
 }

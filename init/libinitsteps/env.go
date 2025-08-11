@@ -1,13 +1,14 @@
-package libinit
+package libinitsteps
 
 import (
+	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"strings"
 )
 
 type setEnvVarsLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (sev setEnvVarsLink) Execute(spec *specs.Spec) error {
@@ -15,7 +16,7 @@ func (sev setEnvVarsLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (sev setEnvVarsLink) SetNext(next ExecutableInitStep) {
+func (sev setEnvVarsLink) SetNext(next init.Step) {
 	sev.next = next
 }
 

@@ -1,8 +1,9 @@
-package libinit
+package libinitsteps
 
 import (
 	"fmt"
 	"github.com/containerd/cgroups/v3/cgroup2"
+	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"os"
 )
@@ -11,10 +12,10 @@ const (
 	MrunCgroupSlice = "/"
 )
 
-// initCgroupLink is the cgroup initializing implementation of ExecutableInitStep.
+// initCgroupLink is the cgroup initializing implementation of Step.
 // It is the only interface for initializing a cgroup.
 type initCgroupLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (i *initCgroupLink) Execute(spec *specs.Spec) error {
@@ -23,7 +24,7 @@ func (i *initCgroupLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (i *initCgroupLink) SetNext(next ExecutableInitStep) {
+func (i *initCgroupLink) SetNext(next init.Step) {
 	i.next = next
 }
 

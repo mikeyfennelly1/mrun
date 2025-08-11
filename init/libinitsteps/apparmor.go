@@ -1,9 +1,12 @@
-package libinit
+package libinitsteps
 
-import "github.com/opencontainers/runtime-spec/specs-go"
+import (
+	"github.com/mikeyfennelly1/mrun/init"
+	"github.com/opencontainers/runtime-spec/specs-go"
+)
 
 type setAppArmorLink struct {
-	next ExecutableInitStep
+	next init.Step
 }
 
 func (s setAppArmorLink) Execute(spec *specs.Spec) error {
@@ -12,7 +15,7 @@ func (s setAppArmorLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (s setAppArmorLink) SetNext(link ExecutableInitStep) {
+func (s setAppArmorLink) SetNext(link init.Step) {
 	//TODO implement me
 	panic("implement me")
 }
