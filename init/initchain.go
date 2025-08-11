@@ -1,10 +1,9 @@
-package libinit
+package init
 
 import (
 	"github.com/opencontainers/runtime-spec/specs-go"
 )
 
-type ChainLink interface {
+type ExecutableInitStep interface {
 	Execute(spec *specs.Spec) error
-	SetNext(next ChainLink)
 }

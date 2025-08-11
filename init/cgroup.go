@@ -1,4 +1,4 @@
-package libinit
+package init
 
 import (
 	"fmt"

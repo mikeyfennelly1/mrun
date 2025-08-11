@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mikeyfennelly1/mrun/container"
+	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -10,46 +10,18 @@ var Start = &cobra.Command{
 	Use:   "start",
 	Short: "Start an isolated environment.",
 	Run: func(cmd *cobra.Command, args []string) {
-		initChain := getInitChain()
-
-		spec, err := container.GetSpec()
+		hub, err := init.Init()
 		if err != nil {
-			logrus.Fatalf(err.Error())
-			logrus.Exit(1)
+			logrus.Fatal("could not initialize hub")
 		}
+		cur := hub.GetSteps()
+		for {
+			if cur != nil {
+				cur.Execute()
 
-		//TODO decide whether we should get and validate the config outside the init chain or not
-		initChain.Execute(spec)
-
-		// execs the process with the current process program
-		// new program is running in new namespaces in chroot jail.
-		err = container.RestartInNewNS("chroot")
-		if err != nil {
-			logrus.Fatalf("unable to enter new namesapces")
-			logrus.Exit(1)
+				cur = *cur.Next()
+			}
+			break
 		}
 	},
-}
-
-func getInitChain() container.ChainLink {
-	// instantiate container state
-	parseConfigLink := &container.ParseConfigLink{}
-
-	//TODO init a containerID and pass to InitCgroup. InitCgroup needs to name
-	// the cgroup after the containerId.
-	// This initContainerState should instantiate an in-memory singleton for the
-	// container state to be used by relevant functions, as well as state.json, which
-	// is to be updated as init lifecycle progresses.
-	initContainerStateLink := &container.InitContainerStateLink{}
-	parseConfigLink.SetNext(initContainerStateLink)
-
-	//TODO move the process into control group created from InitCgroupLink.
-	initCgroupLink := &container.InitCgroupLink{}
-	initContainerStateLink.SetNext(initCgroupLink)
-
-	//TODO pass containerId to function that creates container state directory/file.
-	applyCapsetLink := &container.ApplyCapsetLink{}
-	initCgroupLink.SetNext(applyCapsetLink)
-
-	return parseConfigLink
 }

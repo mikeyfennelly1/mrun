@@ -7,12 +7,11 @@
 //
 // see docs about mrun standard conventions for more.
 
-package libstate
+package state
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/libinit"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"math/rand"
@@ -27,37 +26,44 @@ const (
 	letters    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
-type InitContainerStateLink struct {
-	next libinit.ChainLink
+type StateSubsytem interface {
+	InitState() error
+	GetState() *specs.State
+	UpdateState() *specs.State
+	DeleteState() *specs.State
 }
 
-func (ics *InitContainerStateLink) Execute(spec *specs.Spec) error {
-	panic("implement me")
-	return nil
+var stateSingleton *specs.State = nil
+
+func GetStateForContainer(containerID string) (*specs.State, error) {
+	if stateSingleton == nil {
+		state, err := initializeState(containerID)
+		if err != nil {
+			return nil, err
+		}
+		stateSingleton = state
+	}
+	return stateSingleton, nil
 }
 
-func (ics *InitContainerStateLink) SetNext(next libinit.ChainLink) {
-	ics.next = next
-}
-
-// initContainerStateDirAndFile creates a directory in state
+// initializeState creates a directory in state
 // directory /var/run/mrun/<container-id> and a file
 // state.json in that directory. i.e
 //
 // /var/run/mrun/<container-id>/state.json
-func initContainerStateDirAndFile(containerID string, spec specs.Spec) error {
+func initializeState(containerID string) (*specs.State, error) {
 	containerDirname := fmt.Sprintf("%s%s", varRunMrun, containerID)
 
 	err := os.MkdirAll(containerDirname, 0775)
 	if err != nil {
 		logrus.Errorf("error while creating directory for managing state of container: %v", err)
-		return err
+		return nil, err
 	}
 
-	m := GetContainerManager(containerID)
+	m := getContainerManager(containerID)
 	pwd, err := os.Getwd()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	state := specs.State{
@@ -70,23 +76,23 @@ func initContainerStateDirAndFile(containerID string, spec specs.Spec) error {
 	}
 	err = m.CreateAndInitStateFile(&state)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &state, nil
 }
 
-type ContainerManager struct {
+type containerManager struct {
 	containerID string
 }
 
-func GetContainerManager(containerID string) ContainerManager {
-	return ContainerManager{
+func getContainerManager(containerID string) containerManager {
+	return containerManager{
 		containerID: containerID,
 	}
 }
 
-func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error {
+func (c *containerManager) UpdateContainerStateFile(state specs.State) error {
 	stateByteArray, err := json.Marshal(state)
 	if err != nil {
 		logrus.Errorf("could not update container state: %v", err)
@@ -102,11 +108,11 @@ func (c *ContainerManager) UpdateContainerStateFile(state specs.State) error {
 	return nil
 }
 
-func (c *ContainerManager) DeleteStateFile() error {
+func (c *containerManager) DeleteStateFile() error {
 	return os.Remove(c.getContainerStateFileName())
 }
 
-func (c *ContainerManager) GetContainerState() (*specs.State, error) {
+func (c *containerManager) GetContainerState() (*specs.State, error) {
 	stateContents, err := os.ReadFile(c.getContainerStateFileName())
 	if err != nil {
 		return nil, err
@@ -121,15 +127,15 @@ func (c *ContainerManager) GetContainerState() (*specs.State, error) {
 	return &state, nil
 }
 
-func (c *ContainerManager) getContainerStateFileName() string {
+func (c *containerManager) getContainerStateFileName() string {
 	return fmt.Sprintf("%s/state.json", c.getContainerDirectoryName())
 }
 
-func (c *ContainerManager) getContainerDirectoryName() string {
+func (c *containerManager) getContainerDirectoryName() string {
 	return fmt.Sprintf("%s%s", varRunMrun, c.containerID)
 }
 
-func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error {
+func (c *containerManager) CreateAndInitStateFile(state *specs.State) error {
 	// create the stateFileLocation directory
 	err := os.MkdirAll(c.getContainerDirectoryName(), 0775)
 	if err != nil {
@@ -164,33 +170,12 @@ func (c *ContainerManager) CreateAndInitStateFile(state *specs.State) error {
 	return nil
 }
 
-type ContainerState struct {
+type containerState struct {
 	Name           string
 	ID             string
 	Command        string
 	Status         string
 	BundleLocation string
-}
-
-func getStateOfAllContainers() (*[]ContainerState, error) {
-	subDirs, err := getSubdirectories(varRunMrun)
-	if err != nil {
-		return nil, err
-	}
-
-	var containerInfo []ContainerState
-	containerInfo = []ContainerState{}
-	for _, dir := range subDirs {
-		thisContainerState, _ := GetContainerInfoByContainerID(dir)
-		containerInfo = append(containerInfo, *thisContainerState)
-	}
-
-	return &containerInfo, nil
-}
-
-func GetContainerInfoByContainerID(containerID string) (*ContainerState, error) {
-
-	return nil, nil
 }
 
 func getSubdirectories(root string) ([]string, error) {
