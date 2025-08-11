@@ -2,16 +2,16 @@ package libinit
 
 import "github.com/opencontainers/runtime-spec/specs-go"
 
-type SetSELinuxLabelsLink struct {
-	next ChainLink
+type setSELinuxLabelsLink struct {
+	next ExecutableInitStep
 }
 
-func (s SetSELinuxLabelsLink) Execute(spec *specs.Spec) {
+func (s setSELinuxLabelsLink) Execute(spec *specs.Spec) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s SetSELinuxLabelsLink) SetNext(item ChainLink) {
+func (s setSELinuxLabelsLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	panic("implement me")
 }

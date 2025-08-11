@@ -6,16 +6,16 @@ import (
 	"strings"
 )
 
-type SetEnvVarsLink struct {
-	next ChainLink
+type setEnvVarsLink struct {
+	next ExecutableInitStep
 }
 
-func (sev SetEnvVarsLink) Execute(spec *specs.Spec) error {
+func (sev setEnvVarsLink) Execute(spec *specs.Spec) error {
 	panic("implement me")
 	return nil
 }
 
-func (sev SetEnvVarsLink) SetNext(next ChainLink) {
+func (sev setEnvVarsLink) SetNext(next ExecutableInitStep) {
 	sev.next = next
 }
 

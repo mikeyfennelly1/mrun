@@ -6,70 +6,70 @@ import (
 	"syscall"
 )
 
-type ChrootLink struct {
-	next ChainLink
+type chrootLink struct {
+	next ExecutableInitStep
 }
 
-func (c ChrootLink) Execute(spec *specs.Spec) error {
+func (c chrootLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
 }
 
-func (c ChrootLink) SetNext(item ChainLink) {
+func (c chrootLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	c.next = item
 }
 
-type ChangeProcessDirToNewRootLink struct {
-	next ChainLink
+type changeProcessDirToNewRootLink struct {
+	next ExecutableInitStep
 }
 
-func (c ChangeProcessDirToNewRootLink) Execute(spec *specs.Spec) error {
+func (c changeProcessDirToNewRootLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
 }
 
-func (c ChangeProcessDirToNewRootLink) SetNext(item ChainLink) {
+func (c changeProcessDirToNewRootLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	panic("implement me")
 }
 
-type SetUsersAndGroupsLink struct {
-	next ChainLink
+type setUsersAndGroupsLink struct {
+	next ExecutableInitStep
 }
 
-func (s SetUsersAndGroupsLink) Execute(spec *specs.Spec) error {
+func (s setUsersAndGroupsLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
 }
 
-func (s SetUsersAndGroupsLink) SetNext(item ChainLink) {
+func (s setUsersAndGroupsLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	s.next = item
 }
 
-type SetRLIMITLink struct {
-	next ChainLink
+type setRLIMITLink struct {
+	next ExecutableInitStep
 }
 
-func (s SetRLIMITLink) Execute(spec *specs.Spec) error {
+func (s setRLIMITLink) Execute(spec *specs.Spec) error {
 	setRLIMITsForProcess(spec.Process.Rlimits)
 	return nil
 }
 
-func (s SetRLIMITLink) SetNext(item ChainLink) {
+func (s setRLIMITLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	s.next = item
 }
 
-type SetHostnameLink struct {
-	next ChainLink
+type setHostnameLink struct {
+	next ExecutableInitStep
 }
 
-func (s SetHostnameLink) Execute(spec *specs.Spec) error {
+func (s setHostnameLink) Execute(spec *specs.Spec) error {
 	err := syscall.Sethostname([]byte(spec.Hostname))
 	if err != nil {
 		logrus.Warn(err)
@@ -77,23 +77,23 @@ func (s SetHostnameLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (s SetHostnameLink) SetNext(item ChainLink) {
+func (s setHostnameLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	panic("implement me")
 }
 
-type ExecBinaryLink struct {
-	next ChainLink
+type execBinaryLink struct {
+	next ExecutableInitStep
 }
 
-func (e ExecBinaryLink) Execute(spec *specs.Spec) error {
+func (e execBinaryLink) Execute(spec *specs.Spec) error {
 	//TODO implement me.
 	// This should also execute shell as a default. Research if that is OCI compliant.
 	panic("implement me")
 	return nil
 }
 
-func (e ExecBinaryLink) SetNext(item ChainLink) {
+func (e execBinaryLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-type ApplyCapsetLink struct {
-	next ChainLink
+type applyCapsetLink struct {
+	next ExecutableInitStep
 }
 
-func (a *ApplyCapsetLink) Execute(spec *specs.Spec) error {
+func (a *applyCapsetLink) Execute(spec *specs.Spec) error {
 	// set and apply capability sets to the process
 	setAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
 	setAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
@@ -22,7 +22,7 @@ func (a *ApplyCapsetLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (a *ApplyCapsetLink) SetNext(item ChainLink) {
+func (a *applyCapsetLink) SetNext(item ExecutableInitStep) {
 	//TODO implement me
 	panic("implement me")
 }

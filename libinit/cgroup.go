@@ -11,19 +11,19 @@ const (
 	MrunCgroupSlice = "/"
 )
 
-// InitCgroupLink is the cgroup initializing implementation of ChainLink.
+// initCgroupLink is the cgroup initializing implementation of ExecutableInitStep.
 // It is the only interface for initializing a cgroup.
-type InitCgroupLink struct {
-	next ChainLink
+type initCgroupLink struct {
+	next ExecutableInitStep
 }
 
-func (i *InitCgroupLink) Execute(spec *specs.Spec) error {
+func (i *initCgroupLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
 }
 
-func (i *InitCgroupLink) SetNext(next ChainLink) {
+func (i *initCgroupLink) SetNext(next ExecutableInitStep) {
 	i.next = next
 }
 

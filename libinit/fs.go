@@ -8,15 +8,15 @@ import (
 	"os"
 )
 
-type CreateFileSystemLink struct {
-	next ChainLink
+type createFileSystemLink struct {
+	next ExecutableInitStep
 }
 
-func (c CreateFileSystemLink) Execute(spec *specs.Spec) error {
+func (c createFileSystemLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (c CreateFileSystemLink) SetNext(item ChainLink) {
+func (c createFileSystemLink) SetNext(item ExecutableInitStep) {
 	c.next = item
 }
 

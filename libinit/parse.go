@@ -1,23 +1,22 @@
-package hub
+package libinit
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/libinit"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"os"
 )
 
-type ParseConfigLink struct {
-	next libinit.ChainLink
+type parseConfigLink struct {
+	next ExecutableInitStep
 }
 
-func (pc *ParseConfigLink) Execute(spec *specs.Spec) error {
+func (pc *parseConfigLink) Execute(spec *specs.Spec) error {
 	panic("implement me")
 	return nil
 }
 
-func (pc *ParseConfigLink) SetNext(next libinit.ChainLink) {
+func (pc *parseConfigLink) SetNext(next ExecutableInitStep) {
 	pc.next = next
 }
 
@@ -36,7 +35,7 @@ func parseConfig(pathToConfig string) (*specs.Spec, error) {
 	return &thisSpec, nil
 }
 
-func GetSpec() (*specs.Spec, error) {
+func getSpec() (*specs.Spec, error) {
 	var spec specs.Spec
 	jsonContent, err := os.ReadFile("./config.json")
 	if err != nil {

@@ -2,17 +2,17 @@ package libinit
 
 import "github.com/opencontainers/runtime-spec/specs-go"
 
-type SetAppArmorLink struct {
-	next ChainLink
+type setAppArmorLink struct {
+	next ExecutableInitStep
 }
 
-func (s SetAppArmorLink) Execute(spec *specs.Spec) error {
+func (s setAppArmorLink) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
 }
 
-func (s SetAppArmorLink) SetNext(link ChainLink) {
+func (s setAppArmorLink) SetNext(link ExecutableInitStep) {
 	//TODO implement me
 	panic("implement me")
 }

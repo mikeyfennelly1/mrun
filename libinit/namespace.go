@@ -10,11 +10,11 @@ import (
 	"syscall"
 )
 
-type NamespaceChainLink struct {
-	next ChainLink
+type namespaceLink struct {
+	next ExecutableInitStep
 }
 
-func (nci *NamespaceChainLink) execute(spec *specs.Spec) {
+func (nci *namespaceLink) execute(spec *specs.Spec) {
 
 }
 
