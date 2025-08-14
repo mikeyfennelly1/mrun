@@ -1,76 +1,46 @@
 package libinitsteps
 
 import (
-	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
+	"os"
 	"syscall"
 )
 
-type chrootLink struct {
-	next init.Step
+// chrootStep executes the chroot syscall and moves the
+// process into the new root.
+type chrootStep struct{}
+
+func (c *chrootStep) Execute(spec *specs.Spec) error {
+	// perform chroot syscall
+	err := syscall.Chroot(spec.Root.Path)
+	if err != nil {
+		logrus.Errorf("an error occurred in changing root directory for this process: %v", err)
+		return err
+	}
+
+	// change cwd to the new root
+	logrus.Tracef("changing current working directory to: %s", spec.Root.Path)
+	err = os.Chdir(spec.Root.Path)
+	if err != nil {
+		logrus.Errorf("error changing current working directory: %v", err)
+		return err
+	}
+	logrus.Tracef("changed directory to: %s", spec.Root.Path)
+	return nil
 }
 
-func (c chrootLink) Execute(spec *specs.Spec) error {
+type setUsersAndGroupsStep struct{}
+
+func (s *setUsersAndGroupsStep) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
 }
 
-func (c chrootLink) SetNext(item init.Step) {
-	//TODO implement me
-	c.next = item
-}
+type SetHostnameStep struct{}
 
-type changeProcessDirToNewRootLink struct {
-	next init.Step
-}
-
-func (c changeProcessDirToNewRootLink) Execute(spec *specs.Spec) error {
-	//TODO implement me
-	panic("implement me")
-	return nil
-}
-
-func (c changeProcessDirToNewRootLink) SetNext(item init.Step) {
-	//TODO implement me
-	panic("implement me")
-}
-
-type setUsersAndGroupsLink struct {
-	next init.Step
-}
-
-func (s setUsersAndGroupsLink) Execute(spec *specs.Spec) error {
-	//TODO implement me
-	panic("implement me")
-	return nil
-}
-
-func (s setUsersAndGroupsLink) SetNext(item init.Step) {
-	//TODO implement me
-	s.next = item
-}
-
-type setRLIMITLink struct {
-	next init.Step
-}
-
-func (s setRLIMITLink) Execute(spec *specs.Spec) error {
-	setRLIMITsForProcess(spec.Process.Rlimits)
-	return nil
-}
-
-func (s setRLIMITLink) SetNext(item init.Step) {
-	//TODO implement me
-	s.next = item
-}
-
-type setHostnameLink struct {
-	next init.Step
-}
-
-func (s setHostnameLink) Execute(spec *specs.Spec) error {
+func (s *SetHostnameStep) Execute(spec *specs.Spec) error {
 	err := syscall.Sethostname([]byte(spec.Hostname))
 	if err != nil {
 		logrus.Warn(err)
@@ -78,23 +48,11 @@ func (s setHostnameLink) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func (s setHostnameLink) SetNext(item init.Step) {
-	//TODO implement me
-	panic("implement me")
-}
+type execBinaryStep struct{}
 
-type execBinaryLink struct {
-	next init.Step
-}
-
-func (e execBinaryLink) Execute(spec *specs.Spec) error {
+func (e *execBinaryStep) Execute(spec *specs.Spec) error {
 	//TODO implement me.
 	// This should also execute shell as a default. Research if that is OCI compliant.
 	panic("implement me")
 	return nil
-}
-
-func (e execBinaryLink) SetNext(item init.Step) {
-	//TODO implement me
-	panic("implement me")
 }
