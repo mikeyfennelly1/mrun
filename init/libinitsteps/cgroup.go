@@ -11,13 +11,13 @@ const (
 	MrunCgroupSlice = "/"
 )
 
-// InitCgroupStep is the cgroup initializing implementation of Step.
+// initCgroupStep is the cgroup initializing implementation of Step.
 // It is the only interface for initializing a cgroup.
-type InitCgroupStep struct {
+type initCgroupStep struct {
 	next Step
 }
 
-func (i *InitCgroupStep) Execute(spec *specs.Spec) error {
+func (i *initCgroupStep) Execute(spec *specs.Spec) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
