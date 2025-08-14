@@ -38,9 +38,9 @@ func (s *setUsersAndGroupsStep) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-type SetHostnameStep struct{}
+type setHostnameStep struct{}
 
-func (s *SetHostnameStep) Execute(spec *specs.Spec) error {
+func (s *setHostnameStep) Execute(spec *specs.Spec) error {
 	err := syscall.Sethostname([]byte(spec.Hostname))
 	if err != nil {
 		logrus.Warn(err)
