@@ -9,17 +9,17 @@ import (
 	"strings"
 )
 
-// ApplyCapsetStep applies a Linux capability set to the process.
+// applyCapsetStep applies a Linux capability set to the process.
 //
 // This Link is destructive, and typically subjects the process
 // to being more limited in what it can do.
 //
 // See https://man7.org/linux/man-pages/man7/capabilities.7.html
-type ApplyCapsetStep struct {
+type applyCapsetStep struct {
 	next Step
 }
 
-func (a *ApplyCapsetStep) Execute(spec *specs.Spec) error {
+func (a *applyCapsetStep) Execute(spec *specs.Spec) error {
 	// set and apply capability sets to the process
 	setAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
 	setAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
