@@ -1,34 +1,39 @@
+//go:generate mockgen -source=hub.go -destination=../mocks/hub.go -package=mocks
 package init
 
-import "github.com/mikeyfennelly1/mrun/init/libinit"
+import (
+	"github.com/mikeyfennelly1/mrun/init/libinitsteps"
+	"github.com/opencontainers/runtime-spec/specs-go"
+)
 
 const configJsonPath = "./config.json"
 
-type HubInterface interface {
-	// ContainerIsCreating decides if this container is either
-	// is in the process of being created already or not.
-	//
-	// This is necessary as after exec() (which is required to enter new namespaces)
-	// the process has lost all of its memory. At this crucial point (entering new namespaces)
-	// we actually execute the 'mrun' binary, with the 'start' argument.
-	//
-	// This essentially means that from mrun's perspective, it has to check
-	// "Am I continuing on the work of a previous process that was in the middle of creating a
-	// container, or am I starting the creation a new container?"
-	//
-	// Thus, we ask the mrun state subsystem, if the state of the container that
-	// we are creating 'CREATING'. If so, we proceed based on the state.json
-	// to continue to create the container by finding the delta between the state.json
-	// and the config.json (the manifest essentially)
-	ContainerIsCreating() bool
+// GetSteps creates a slice of Step implementations
+// that correspond to the steps required between now and the
+// end of the init stage.
+//
+// The end of the init stage can be either:
+//  1. Executing mrun start again, wherein the
+//     mrun process can determine if it is already
+//     in the process of initializing a container.	.
+//  2. Executing the application binary.
+//
+// @param containerID: *string | null
+//
+//	If this is left null, it is assumed
+//	that we are at the first stage of the init process. i.e.
+//	that the container does not exist yet.
+//	If it is not null, and a valid containerID has been
+//	passed, GetSteps retrieves a StateManager object for the
+//	statefile that corresponds with the containerID via the .
+//
+// @param
+func GetSteps(containerID *string, configJson *specs.Spec) {
 
-	// GetSteps creates the init chain based on if it is currently
-	// being created already or not and returns the first link
-	GetSteps(isCreating bool) []libinit.ExecutableInitStep
 }
 
 type hub struct {
 	// initChain is a linked list of items to execute
 	// in sequence in order to complete this stage of init
-	InitChain libinit.ExecutableInitStep
+	steps []libinitsteps.Step
 }
