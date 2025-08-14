@@ -2,23 +2,16 @@ package libinitsteps
 
 import (
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sys/unix"
 	"os"
 )
 
-type createFileSystemLink struct {
-	next init.Step
-}
+type createFileSystemStep struct{}
 
-func (c createFileSystemLink) Execute(spec *specs.Spec) error {
+func (c *createFileSystemStep) Execute(spec *specs.Spec) error {
 	return nil
-}
-
-func (c createFileSystemLink) SetNext(item init.Step) {
-	c.next = item
 }
 
 func createFileSystem(spec specs.Spec) error {

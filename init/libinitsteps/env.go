@@ -1,23 +1,16 @@
 package libinitsteps
 
 import (
-	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"strings"
 )
 
-type setEnvVarsLink struct {
-	next init.Step
-}
+type setEnvVarsStep struct{}
 
-func (sev setEnvVarsLink) Execute(spec *specs.Spec) error {
+func (sev *setEnvVarsStep) Execute(spec *specs.Spec) error {
 	panic("implement me")
 	return nil
-}
-
-func (sev setEnvVarsLink) SetNext(next init.Step) {
-	sev.next = next
 }
 
 func setEnvVars(envVars []string) {
