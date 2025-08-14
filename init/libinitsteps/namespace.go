@@ -2,7 +2,6 @@ package libinitsteps
 
 import (
 	"encoding/json"
-	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"golang.org/x/sys/unix"
 	"log"
@@ -11,12 +10,11 @@ import (
 	"syscall"
 )
 
-type namespaceLink struct {
-	next init.Step
-}
+type restartInNewNamespacesStep struct{}
 
-func (nci *namespaceLink) execute(spec *specs.Spec) {
-
+func (nci *restartInNewNamespacesStep) Execute(spec *specs.Spec) error {
+	panic("implement me")
+	return nil
 }
 
 type processNamespaceProfile struct {
