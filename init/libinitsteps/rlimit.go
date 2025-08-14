@@ -6,6 +6,13 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+type setRLIMITStep struct{}
+
+func (s *setRLIMITStep) Execute(spec *specs.Spec) error {
+	setRLIMITsForProcess(spec.Process.Rlimits)
+	return nil
+}
+
 func setRLIMITsForProcess(processRlimits []specs.POSIXRlimit) {
 	for _, rlimit := range processRlimits {
 		var thisRlim unix.Rlimit
