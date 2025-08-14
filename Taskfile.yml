@@ -27,3 +27,9 @@ tasks:
     desc: Open godoc documentation in local browser.
     cmds:
       - open http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/
+
+  mocks:
+    desc: Generate mocks from source annotations. Conventionally, added to mocks/
+    cmds:
+      - cd init && go generate
+      - cd state && go generate
