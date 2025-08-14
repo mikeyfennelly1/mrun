@@ -1,3 +1,5 @@
+//go:generate mockgen -source=state.go -destination=../mocks/state.go -package=mocks
+
 // global defines the global information about running containers on
 // the system that mrun manages.
 //
@@ -14,36 +16,36 @@ import (
 	"fmt"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
-	"math/rand"
 	"os"
-	"path/filepath"
-	"time"
 )
 
 const (
 	varRunMrun = "/var/run/mrun/"
 	ociVersion = "0.2.0"
-	letters    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
+// StateSubsytem is used as an interface to creating and
+// managing a state for a containerID.
+//
+// It creates a state.json file, at the location /var/run/mrun/<containerId>/state.json
+//
+// For more information on state.json, see: https://github.com/opencontainers/runtime-spec/blob/main/schema/state-schema.json
 type StateSubsytem interface {
-	InitState() error
-	GetState() *specs.State
-	UpdateState() *specs.State
-	DeleteState() *specs.State
+	InitState(containerID string) error
+	GetStateManager(containerID string) *StateManager
+	UpdateState(containerID string, updatedState *specs.State) error
+	DeleteState(containerID string) error
 }
 
 var stateSingleton *specs.State = nil
 
-func GetStateForContainer(containerID string) (*specs.State, error) {
-	if stateSingleton == nil {
-		state, err := initializeState(containerID)
-		if err != nil {
-			return nil, err
-		}
-		stateSingleton = state
-	}
-	return stateSingleton, nil
+// StateManager allows an object to exist that exposes an interface
+// that someone can use to update the object, and in turn
+// the state for that corresponding container.
+//
+// StateManager can only ever provide the interface to 1 state file.
+type StateManager struct {
+	state *specs.State
 }
 
 // initializeState creates a directory in state
@@ -51,7 +53,10 @@ func GetStateForContainer(containerID string) (*specs.State, error) {
 // state.json in that directory. i.e
 //
 // /var/run/mrun/<container-id>/state.json
-func initializeState(containerID string) (*specs.State, error) {
+func initializeState(containerID string) (*StateManager, error) {
+	if containerID == "" {
+		return nil, fmt.Errorf("containerId is invalid")
+	}
 	containerDirname := fmt.Sprintf("%s%s", varRunMrun, containerID)
 
 	err := os.MkdirAll(containerDirname, 0775)
@@ -69,7 +74,7 @@ func initializeState(containerID string) (*specs.State, error) {
 	state := specs.State{
 		Version:     ociVersion,
 		ID:          containerID,
-		Status:      "running",
+		Status:      "creating",
 		Pid:         os.Getpid(),
 		Bundle:      pwd,
 		Annotations: nil,
@@ -79,7 +84,9 @@ func initializeState(containerID string) (*specs.State, error) {
 		return nil, err
 	}
 
-	return &state, nil
+	return &StateManager{
+		state: &state,
+	}, nil
 }
 
 type containerManager struct {
@@ -168,38 +175,4 @@ func (c *containerManager) CreateAndInitStateFile(state *specs.State) error {
 	logrus.Infof("succesfull initialization of container state file at %s", c.getContainerStateFileName())
 
 	return nil
-}
-
-type containerState struct {
-	Name           string
-	ID             string
-	Command        string
-	Status         string
-	BundleLocation string
-}
-
-func getSubdirectories(root string) ([]string, error) {
-	var subdirs []string
-
-	entries, err := os.ReadDir(root)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, entry := range entries {
-		if entry.IsDir() {
-			subdirs = append(subdirs, filepath.Join(root, entry.Name()))
-		}
-	}
-
-	return subdirs, nil
-}
-
-func NewContainerID() string {
-	rand.Seed(time.Now().UnixNano())
-	b := make([]byte, 16)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }
