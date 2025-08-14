@@ -14,29 +14,34 @@ type Step interface {
 	Execute(spec *specs.Spec) error
 }
 
-func StepFactory[T any](specSubObj T) (Step, error) {
-	switch any(specSubObj).(type) {
-	case specs.Root:
+// StepFactory gets a Step for a given part of the
+func StepFactory(stepName string) (Step, error) {
+	switch stepName {
+	case "chroot":
 		return &chrootStep{}, nil
-	case string:
+	case "create-fs":
 		return &createFileSystemStep{}, nil
-	case string:
+	case "exec-bin":
 		return &execBinaryStep{}, nil
-	case string:
-		return &InitCgroupStep{}, nil
-	case string:
-		return &namespaceStep{}, nil
-	case string:
+	case "init-cgroup":
+		return &initCgroupStep{}, nil
+	case "namespace":
+		return &restartInNewNamespacesStep{}, nil
+	case "apparmor":
 		return &setAppArmorStep{}, nil
-	case string:
+	case "set-env":
 		return &setEnvVarsStep{}, nil
-	case string:
+	case "rlimit":
 		return &setRLIMITStep{}, nil
-	case string:
+	case "capset":
+		return &applyCapsetStep{}, nil
+	case "selinux":
 		return &setSELinuxLabelsLink{}, nil
-	case string:
+	case "usersgroups":
 		return &setUsersAndGroupsStep{}, nil
+	case "hostname":
+		return &setHostnameStep{}, nil
 	default:
-		return nil, fmt.Errorf("unknown type for object: %v", specSubObj)
+		return nil, fmt.Errorf("unknown step name: %s", stepName)
 	}
 }
