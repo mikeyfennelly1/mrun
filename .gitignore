@@ -5,4 +5,4 @@
 /mrun
 **config.json
 **.devbox
-**mock_**
+/mocks/
