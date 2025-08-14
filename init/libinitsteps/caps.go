@@ -2,7 +2,6 @@ package libinitsteps
 
 import (
 	"fmt"
-	"github.com/mikeyfennelly1/mrun/init"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/syndtr/gocapability/capability"
@@ -10,22 +9,23 @@ import (
 	"strings"
 )
 
-type applyCapsetLink struct {
-	next init.Step
+// ApplyCapsetStep applies a Linux capability set to the process.
+//
+// This Link is destructive, and typically subjects the process
+// to being more limited in what it can do.
+//
+// See https://man7.org/linux/man-pages/man7/capabilities.7.html
+type ApplyCapsetStep struct {
+	next Step
 }
 
-func (a *applyCapsetLink) Execute(spec *specs.Spec) error {
+func (a *ApplyCapsetStep) Execute(spec *specs.Spec) error {
 	// set and apply capability sets to the process
 	setAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
 	setAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)
 	setAndApplyCapsetToCurrentPid(capability.EFFECTIVE, spec.Process.Capabilities.Effective)
 	setAndApplyCapsetToCurrentPid(capability.AMBIENT, spec.Process.Capabilities.Ambient)
 	return nil
-}
-
-func (a *applyCapsetLink) SetNext(item init.Step) {
-	//TODO implement me
-	panic("implement me")
 }
 
 // setFileCapabilities for the binary for the init process of
