@@ -22,6 +22,22 @@ My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some
 
 systemd, a filesystem that supports extended attributes and a Kernel newer than v4.5 - to have cgroupv2 support. If you are currently running Linux, this configuration is more than likely already the case for your setup, but just to make note of these in case of unexpected behaviors.
 
+=== Install
+
+Run the installation script with the following command:
+
+[source, bash]
+----
+curl -fsSL https://github.com/mikeyfennelly1/mrun.git/scripts/install.sh | bash
+----
+
+Validate your setup with the following command:
+
+[source, bash]
+----
+mrun --version
+----
+
 === Spawning a container
 
 To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
