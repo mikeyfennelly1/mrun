@@ -17,4 +17,4 @@
 //
 //   - Open Container Initiative Spec: https://github.com/mikeyfennelly1/mrun/tree/main/docs.
 //   - mrun architecture: https://github.com/mikeyfennelly1/mrun/tree/main/docs.
-package mrun
+package main

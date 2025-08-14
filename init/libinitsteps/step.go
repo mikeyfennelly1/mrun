@@ -6,15 +6,17 @@ import (
 	"github.com/opencontainers/runtime-spec/specs-go"
 )
 
-// Step is used to represent an executable step in an init
-// chain/sequence of steps.
-// Given a spec, it does it's duties, and reports an error should
-// one happen.
+// Step is used to represent an executable step in an init chain/sequence of steps.
+// Given a spec, it does it's duties, and reports an error - should one happen.
 type Step interface {
 	Execute(spec *specs.Spec) error
 }
 
 // StepFactory gets a Step for a given part of the
+// init chain based on the title for that step.
+//
+// A developer can consult the source code of this
+// factory function for the titles available.
 func StepFactory(stepName string) (Step, error) {
 	switch stepName {
 	case "chroot":

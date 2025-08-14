@@ -1,4 +1,4 @@
-package mrun
+package main
 
 import (
 	"fmt"
@@ -12,13 +12,12 @@ var rootCmd = &cobra.Command{
 	Use:   "mrun", // The name of the command
 	Short: "A low-level container runtime.",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		cmd.Help() // ignoring this error
 	},
 }
 
 func main() {
 	rootCmd.AddCommand(cmd.Start)
-	rootCmd.AddCommand(cmd.Chroot)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
