@@ -19,6 +19,6 @@ var Spec = &cobra.Command{
 			os.Exit(1)
 		}
 
-		err = os.WriteFile("./config.json", []byte(configJson), 0755)
+		err = os.WriteFile("./config.json", configJson, 0755)
 	},
 }
