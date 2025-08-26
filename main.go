@@ -9,8 +9,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "mrun", // The name of the command
-	Short: "A low-level container runtime.",
+	Use:     "mrun", // The name of the command
+	Short:   "A low-level container runtime.",
+	Version: "2.0.0",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help() // ignoring this error
 	},
