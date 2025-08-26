@@ -13,7 +13,7 @@ var Spec = &cobra.Command{
 	Short: "Initialize a default config.json file in current working directory.",
 	Run: func(cmd *cobra.Command, args []string) {
 		spec := utils.GetDefaultConfigJson()
-		configJson, err := json.Marshal(spec)
+		configJson, err := json.MarshalIndent(spec, "", "  ")
 		if err != nil {
 			logrus.Fatal("unable to marshal structure 'spec' to string type")
 			os.Exit(1)
