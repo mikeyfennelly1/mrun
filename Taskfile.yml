@@ -8,7 +8,7 @@ tasks:
 
   build:
     cmds:
-      - go build -o /bin/mrun main.go
+      - ./scripts/install.sh
     desc: Build application binary and store to /bin/mrun
 
   test:
