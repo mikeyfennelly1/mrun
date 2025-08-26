@@ -4,7 +4,6 @@ go 1.23
 
 require (
 	github.com/containerd/cgroups/v3 v3.0.5
-	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/opencontainers/runtime-spec v1.2.1
 	github.com/sirupsen/logrus v1.9.3
