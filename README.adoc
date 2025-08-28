@@ -42,8 +42,10 @@ mrun --version
 
 To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
 
-[NOTE]
-I recommend that you use an https://alpinelinux.org/[Alpine Linux filesystem].
+I recommend that to get started just testing out low level container stuff, you use alpine as your first rootfs.
+
+[source, bash]
+curl -fsSL https://github.com/mikeyfennelly1/mrun.git/scripts/install-mini-alpine.sh | bash
 
 When you are ready to run an mrun container, your current working directory in your filesystem should look like this:
 
