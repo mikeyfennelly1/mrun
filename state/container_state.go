@@ -122,7 +122,7 @@ func CreateAndInitStateFile(containerID string, state *specs.State) error {
 		return err
 	}
 
-	logrus.Infof("succesfull initialization of container state file at %s", stateFile)
+	logrus.Infof("succesful initialization of container state file at %s", stateFile)
 
 	return nil
 }
