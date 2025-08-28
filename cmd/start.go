@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"github.com/mikeyfennelly1/mrun/init/libinitsteps"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/mikeyfennelly1/mrun/utils"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var Start = &cobra.Command{
@@ -22,15 +25,26 @@ var Start = &cobra.Command{
 				"capset",
 				"namespace",
 			}
+			// initialize container sm
+			containerID := utils.NewContainerID()
+			sm, err := state.NewContainerState(containerID)
+			if err != nil {
+				logrus.Fatal("unable to initialize container sm")
+				panic("exiting...")
+			}
 
 			for _, stepName := range stepNames {
 				step, err := libinitsteps.StepFactory(stepName)
 				if err != nil {
-					panic(err)
+					sm.CleanUp()
+					logrus.Fatalf("unable to get init step %s from StepFactory: %v", stepName, err)
+					os.Exit(1)
 				}
-				err = step.Execute(spec)
+				err = step.Execute(spec, sm)
 				if err != nil {
-					panic(err)
+					logrus.Errorf("mrun start failed with error: %v", err)
+					sm.CleanUp()
+					os.Exit(1)
 				}
 			}
 
@@ -54,7 +68,7 @@ var Start = &cobra.Command{
 				if err != nil {
 					panic(err)
 				}
-				err = step.Execute(spec)
+				err = step.Execute(spec, nil)
 				if err != nil {
 					panic(err)
 				}
