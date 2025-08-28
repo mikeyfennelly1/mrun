@@ -158,3 +158,9 @@ func (sm StateManager) FetchState() (*specs.State, error) {
 
 	return &state, nil
 }
+
+func (sm StateManager) PrintStateFile() {
+	containerStateJson := fmt.Sprintf("%s/%s/state.json", MrunStateGlobalDirectory, sm.containerID)
+	contents, _ := os.ReadFile(containerStateJson)
+	fmt.Printf(string(contents))
+}

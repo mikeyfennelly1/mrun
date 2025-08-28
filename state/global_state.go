@@ -72,6 +72,14 @@ func GetStateManager(containerID string) *StateManager {
 	return &StateManager{containerID: containerID}
 }
 
+func StateFileExists(containerID string) bool {
+	info, _ := os.Stat(fmt.Sprintf("%s/%s/state.json", MrunStateGlobalDirectory, containerID))
+	if info != nil {
+		return true
+	}
+	return false
+}
+
 func DeleteState(containerID string) error {
 	err := os.RemoveAll(getContainerDirectoryName(containerID))
 	if err != nil {
