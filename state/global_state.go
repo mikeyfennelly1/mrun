@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	varRunMrun = "/var/run/mrun/"
-	ociVersion = "0.2.0"
+	MrunStateGlobalDirectory = "/var/run/mrun/"
+	ociVersion               = "0.2.0"
 )
 
 var stateSingleton *specs.State = nil
@@ -37,7 +37,7 @@ func NewContainerState(containerID string) (*StateManager, error) {
 	if containerID == "" {
 		return nil, fmt.Errorf("containerId is invalid")
 	}
-	containerDirname := fmt.Sprintf("%s%s", varRunMrun, containerID)
+	containerDirname := fmt.Sprintf("%s%s", MrunStateGlobalDirectory, containerID)
 
 	err := os.MkdirAll(containerDirname, 0775)
 	if err != nil {

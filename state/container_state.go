@@ -143,3 +143,18 @@ func (sm StateManager) UpdateBundle(bundlePath string) error {
 
 	return nil
 }
+
+func (sm StateManager) FetchState() (*specs.State, error) {
+	containerStateJson := fmt.Sprintf("%s/%s/state.json", MrunStateGlobalDirectory, sm.containerID)
+	contents, err := os.ReadFile(containerStateJson)
+	if err != nil {
+		return nil, err
+	}
+	var state specs.State
+	err = json.Unmarshal(contents, &state)
+	if err != nil {
+		return nil, err
+	}
+
+	return &state, nil
+}

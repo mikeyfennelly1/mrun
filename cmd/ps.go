@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var Ps = &cobra.Command{
@@ -13,17 +15,21 @@ var Ps = &cobra.Command{
 		// get a list of the directories in the mrun state dir
 
 		// print the header for the state
-		// loop through each directory
-		// unmarshal <directory>/state.json to specs.State struct
-		// pass state structure to printing function
-		fmt.Printf("%-20s %-20s %-20s %-20s\n", "Container ID", "Version", "Status", "Bundle Location")
-		testSpec1 := specs.State{
-			ID:      "XYXYXY",
-			Version: "latest",
-			Status:  "created",
-			Bundle:  "/non/existent/path",
+		fmt.Printf("%-20s %-20s %-20s %-20s\n", "CONTAINER ID", "VERSION", "STATUS", "BUNDLE LOCATION")
+
+		// find all subdirectory entries
+		entries, err := os.ReadDir(state.MrunStateGlobalDirectory)
+		if err != nil {
+			os.Exit(0)
 		}
-		printFormattedState(&testSpec1)
+
+		for _, e := range entries {
+			if e.IsDir() {
+				sm := state.GetStateManager(e.Name())
+				state, _ := sm.FetchState()
+				printFormattedState(state)
+			}
+		}
 	},
 }
 

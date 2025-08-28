@@ -13,7 +13,7 @@ func getContainerStateFileName(containerID string) string {
 }
 
 func getContainerDirectoryName(containerID string) string {
-	return fmt.Sprintf("%s%s", varRunMrun, containerID)
+	return fmt.Sprintf("%s%s", MrunStateGlobalDirectory, containerID)
 }
 
 func getContainerStateFileContents(containerID string) ([]byte, error) {
