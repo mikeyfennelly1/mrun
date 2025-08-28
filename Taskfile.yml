@@ -1,0 +1,35 @@
+version: '3'
+
+tasks:
+  default:
+    desc: list all task commands by default when specific subcommand is omitted.
+    cmds:
+      - task --list | grep -v default
+
+  build:
+    cmds:
+      - ./scripts/install.sh
+    desc: Build application binary and store to /bin/mrun
+
+  test:
+    cmds:
+      - go test ./src/...
+    desc: Run all tests
+
+  docs:
+    desc: Serve godoc
+    cmds:
+      - echo "opening godocs at http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/src/"
+      - godoc -http=:6060 &
+      - task docopen
+
+  docopen:
+    desc: Open godoc documentation in local browser.
+    cmds:
+      - open http://localhost:6060/pkg/github.com/mikeyfennelly1/mrun/
+
+  mocks:
+    desc: Generate mocks from source annotations. Conventionally, added to mocks/
+    cmds:
+      - cd init && go generate
+      - cd state && go generate

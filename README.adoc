@@ -3,7 +3,7 @@
 
 == Overview
 
-mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtime written in Go. It contains a package that you can download for interacting with the cgroup filesystem interface, documentation about container technology, a command line to use the tool and _more to come_...
+mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtime written in Go. The mrun container runtime is exclusive to Linux, and will probably work best on Ubuntu.
 
 [NOTE]
 ====
@@ -12,20 +12,40 @@ This runtime is created to be compatible with Linux operating systems that have 
 
 === What is a container?
 
-The Open Container Initiative defines a container as
+The Open Container Initiative (OCI) defines a container as a standardized, portable, and lightweight runtime environment for software that bundles an application and its dependencies, libraries, and configuration files.
 
-== System prerequisites for using mrun
+== Usage
+
+=== System Prerequisites
 
 My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
 
 systemd, a filesystem that supports extended attributes and a Kernel newer than v4.5 - to have cgroupv2 support. If you are currently running Linux, this configuration is more than likely already the case for your setup, but just to make note of these in case of unexpected behaviors.
 
-== How to start a container with mrun
+=== Install
+
+Run the installation script with the following command:
+
+[source, bash]
+----
+curl -fsSL https://github.com/mikeyfennelly1/mrun.git/scripts/install.sh | bash
+----
+
+Validate your setup with the following command:
+
+[source, bash]
+----
+mrun --version
+----
+
+=== Spawning a container
 
 To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
 
-[NOTE]
-I recommend that you use an https://alpinelinux.org/[Alpine Linux filesystem].
+I recommend that to get started just testing out low level container stuff, you use alpine as your first rootfs.
+
+[source, bash]
+curl -fsSL https://github.com/mikeyfennelly1/mrun.git/scripts/install-mini-alpine.sh | bash
 
 When you are ready to run an mrun container, your current working directory in your filesystem should look like this:
 
@@ -55,12 +75,6 @@ mrun-test
 ----
 
 Now run `mrun start`, and your default configurations should start a bash process in the container.
-
-=== Original Goals of this project
-
-Originally this project was created as a way to learn Linux and container technology. It ended up requiring a lot of research, hence the long pauses in development during the period of creating mrun.
-
-A heavily motivating factor for this project is that container technology and operating system level virtualization are at the core of modern, cloud native applications and workflows. Low-level container technology (like seen in this runtime) enables other, higher level container technologies like Kubernetes and Red Hat Openshift. These technologies and the products built around them have always seemed quite interesting to me, so I thought that there would be no better way to investigate these technologies further than by starting at the foundations.
 
 == Reading and documentation
 

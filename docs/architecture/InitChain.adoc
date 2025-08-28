@@ -1,0 +1,51 @@
+= init-chain
+:toc:
+
+== Abstract
+A chain of command type structure that can be used to sequentially execute atomic steps to initialize the container based on the `spec.json`.
+
+== InitChain
+A chain of command of `InitChainItem` structures.
+
+The InitChain is a stateful data structure (it has a current position). It needs to be able to:
+
+=== Functionality (not necessarily user-facing)
+
+- Run the *current node*.
+- Move the *current position* to the next node.
+- *Rollback* the chain *on the event that a node returns an error*, undoing every step that was completed at the beginning of the rollback process.
+
+__Whether this functionality is available to the user of the API, is up to you to decide.__
+
+=== Implementation
+
+- The init chain needs to maintain a _currentPosition_.
+
+Each node needs to have the functions:
+
+- `Run() error`
+- `RollBack()`
+
+There needs to be a mechanism (whether it be a list, a proxy or otherwise) that can interface with a multitude of these nodes in a linear fashion, moving along running each, checking for errors should one occur, rolling back if an error occurs.
+
+_The functions `next()` and `previous()` return pointers to allow for nullability._
+
+[source, go]
+----
+type InitChain interface {
+	DoChain() error
+}
+----
+
+== InitChainNode
+The node function is naive to any chain structural or functional elements, such as previous/next nodes, current position.
+
+[source, go]
+----
+type InitChainNode interface {
+	Run() error // creates state of the node
+	Rollback() // should only be usable if this node has state
+}
+----
+
+== Control group location

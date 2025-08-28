@@ -1,0 +1,8 @@
+= mrun documentation
+:toc:
+
+== Original Goals of this project
+
+Originally this project was created as a way to learn Linux and container technology. It ended up requiring a lot of research, hence the long pauses in development during the period of creating mrun.
+
+A heavily motivating factor for this project is that container technology and operating system level virtualization are at the core of modern, cloud native applications and workflows. Low-level container technology (like seen in this runtime) enables other, higher level container technologies like Kubernetes and Red Hat Openshift. These technologies and the products built around them have always seemed quite interesting to me, so I thought that there would be no better way to investigate these technologies further than by starting at the foundations.

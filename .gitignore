@@ -3,3 +3,7 @@
 /.idea
 /.vscode
 /mrun
+**config.json
+**.devbox
+/mocks/
+/config.json
