@@ -3,6 +3,7 @@ package libinitsteps
 import (
 	"fmt"
 	"github.com/containerd/cgroups/v3/cgroup2"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -16,15 +17,13 @@ const (
 // It is the only interface for initializing a cgroup.
 type initCgroupStep struct{}
 
-func (i initCgroupStep) Execute(spec *specs.Spec) error {
-	// TODO migrate the containerID from "test" to the legit value
-	containerID := "test"
-	_, err := createNewCgroupForContainer(containerID, *spec)
+func (i initCgroupStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
+	_, err := createNewCgroupForContainer(stateManager.GetContainerID(), spec, stateManager)
 	if err != nil {
 		return err
 	}
 
-	err = moveCurrentPidToCgroup(containerID)
+	err = moveCurrentPidToCgroup(stateManager.GetContainerID())
 	if err != nil {
 		return err
 	}
@@ -38,12 +37,16 @@ func createNewCgroupForContainer(containerID string, spec *specs.Spec, sm *state
 
 	res := cgroup2.Resources{}
 
+	groupName := fmt.Sprintf("%s.slice", sm.GetContainerID())
+
 	// create the control group as direct descendant of root user slice.
-	m, err := cgroup2.NewSystemd("/", "my-cgroup-abc.slice", os.Getpid(), &res)
+	m, err := cgroup2.NewSystemd("/", groupName, -1, &res)
 	if err != nil {
+		logrus.Errorf("NewSystemd slice creation during cgroup initialization failed with error: %v", err)
 		logrus.Errorf("unable to create new cgroup at location: /sys/fs/cgroup/%s", getGroupNameForContainerID(containerID))
 		return nil, err
 	}
+	sm.SetCgroupInitialized()
 	logrus.Infof("new cgroup created at path: /sys/fs/cgroup/%s", getGroupNameForContainerID(containerID))
 
 	// update the cgroup controllers to match the contents of the cgroup2.Resources object
