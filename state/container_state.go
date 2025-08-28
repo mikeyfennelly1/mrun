@@ -14,7 +14,36 @@ import (
 //
 // StateManager can only ever provide the interface to 1 state file.
 type StateManager struct {
-	containerID string
+	containerID       string
+	cgroupInitialized bool
+}
+
+func (sm StateManager) GetContainerID() string {
+	return sm.containerID
+}
+
+func (sm StateManager) SetCgroupInitialized() {
+	sm.cgroupInitialized = true
+}
+
+func (sm StateManager) CleanUp() {
+	// remove the state file
+	stateJsonDir := fmt.Sprintf("%s%s", MrunStateGlobalDirectory, sm.containerID)
+	logrus.Infof("removing state cache for container: %s", stateJsonDir)
+	err := os.RemoveAll(stateJsonDir)
+	if err != nil {
+		logrus.Errorf("unable to remove state cache directory: %s", stateJsonDir)
+	}
+	if sm.cgroupInitialized {
+		// remove the cgroup
+		cgroupPath := fmt.Sprintf("/sys/fs/cgroup/%s")
+		logrus.Errorf("removing cgroup for container: %s", cgroupPath)
+		err = os.RemoveAll(cgroupPath)
+		if err != nil {
+			logrus.Errorf("unable to remove cgroup: %s", cgroupPath)
+		}
+
+	}
 }
 
 func (sm StateManager) UpdateContainerStatus(status string) error {
