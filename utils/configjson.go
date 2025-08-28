@@ -218,7 +218,8 @@ func GetConfigJson(pathToConfig string) (*specs.Spec, error) {
 		return nil, err
 	}
 
-	logrus.Infof("successfully marshalled: %s", pathToConfig)
+	pwd, _ := os.Getwd()
+	logrus.Infof("successfully marshalled: %s/%s", pwd, pathToConfig)
 	return &thisSpec, nil
 }
 
