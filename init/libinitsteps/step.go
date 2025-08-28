@@ -3,13 +3,14 @@ package libinitsteps
 
 import (
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 )
 
 // Step is used to represent an executable step in an init chain/sequence of steps.
 // Given a spec, it does it's duties, and reports an error - should one happen.
 type Step interface {
-	Execute(spec *specs.Spec) error
+	Execute(spec *specs.Spec, stateManager *state.StateManager) error
 }
 
 // StepFactory gets a Step for a given part of the

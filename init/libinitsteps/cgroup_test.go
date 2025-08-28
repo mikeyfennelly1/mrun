@@ -7,7 +7,7 @@ import (
 )
 
 func Test_initCgroup(t *testing.T) {
-	err := initCgroupStep{}.Execute(utils.GetDefaultConfigJson())
+	err := initCgroupStep{}.Execute(utils.GetDefaultConfigJson(), nil)
 	require.NoError(t, err)
 }
 

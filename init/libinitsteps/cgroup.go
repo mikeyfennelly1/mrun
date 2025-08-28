@@ -32,7 +32,7 @@ func (i initCgroupStep) Execute(spec *specs.Spec) error {
 	return nil
 }
 
-func createNewCgroupForContainer(containerID string, spec specs.Spec) (*cgroup2.Manager, error) {
+func createNewCgroupForContainer(containerID string, spec *specs.Spec, sm *state.StateManager) (*cgroup2.Manager, error) {
 	// get cgroup2.Resources obj from specs.LinuxResources obj
 	resources := cgroup2.ToResources(spec.Linux.Resources)
 

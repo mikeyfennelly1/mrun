@@ -2,6 +2,7 @@ package libinitsteps
 
 import (
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sys/unix"
@@ -10,7 +11,7 @@ import (
 
 type createFileSystemStep struct{}
 
-func (c *createFileSystemStep) Execute(spec *specs.Spec) error {
+func (c *createFileSystemStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	return nil
 }
 

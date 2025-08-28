@@ -2,6 +2,7 @@ package libinitsteps
 
 import (
 	"fmt"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/syndtr/gocapability/capability"
@@ -19,7 +20,7 @@ type applyCapsetStep struct {
 	next Step
 }
 
-func (a *applyCapsetStep) Execute(spec *specs.Spec) error {
+func (a *applyCapsetStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	// set and apply capability sets to the process
 	setAndApplyCapsetToCurrentPid(capability.INHERITABLE, spec.Process.Capabilities.Inheritable)
 	setAndApplyCapsetToCurrentPid(capability.PERMITTED, spec.Process.Capabilities.Permitted)

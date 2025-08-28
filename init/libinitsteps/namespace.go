@@ -2,6 +2,7 @@ package libinitsteps
 
 import (
 	"encoding/json"
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"golang.org/x/sys/unix"
 	"log"
@@ -12,7 +13,7 @@ import (
 
 type restartInNewNamespacesStep struct{}
 
-func (nci *restartInNewNamespacesStep) Execute(spec *specs.Spec) error {
+func (nci *restartInNewNamespacesStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	panic("implement me")
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 
 type setEnvVarsStep struct{}
 
-func (sev *setEnvVarsStep) Execute(spec *specs.Spec) error {
+func (sev *setEnvVarsStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	panic("implement me")
 	return nil
 }

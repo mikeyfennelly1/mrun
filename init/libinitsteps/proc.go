@@ -1,6 +1,7 @@
 package libinitsteps
 
 import (
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -11,7 +12,7 @@ import (
 // process into the new root.
 type chrootStep struct{}
 
-func (c *chrootStep) Execute(spec *specs.Spec) error {
+func (c *chrootStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	// perform chroot syscall
 	err := syscall.Chroot(spec.Root.Path)
 	if err != nil {
@@ -32,7 +33,7 @@ func (c *chrootStep) Execute(spec *specs.Spec) error {
 
 type setUsersAndGroupsStep struct{}
 
-func (s *setUsersAndGroupsStep) Execute(spec *specs.Spec) error {
+func (s *setUsersAndGroupsStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	//TODO implement me
 	panic("implement me")
 	return nil
@@ -40,7 +41,7 @@ func (s *setUsersAndGroupsStep) Execute(spec *specs.Spec) error {
 
 type setHostnameStep struct{}
 
-func (s *setHostnameStep) Execute(spec *specs.Spec) error {
+func (s *setHostnameStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	err := syscall.Sethostname([]byte(spec.Hostname))
 	if err != nil {
 		logrus.Warn(err)
@@ -50,7 +51,7 @@ func (s *setHostnameStep) Execute(spec *specs.Spec) error {
 
 type execBinaryStep struct{}
 
-func (e *execBinaryStep) Execute(spec *specs.Spec) error {
+func (e *execBinaryStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	//TODO implement me.
 	// This should also execute shell as a default. Research if that is OCI compliant.
 	panic("implement me")

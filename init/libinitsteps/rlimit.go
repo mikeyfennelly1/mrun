@@ -1,6 +1,7 @@
 package libinitsteps
 
 import (
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sys/unix"
@@ -8,7 +9,7 @@ import (
 
 type setRLIMITStep struct{}
 
-func (s *setRLIMITStep) Execute(spec *specs.Spec) error {
+func (s *setRLIMITStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
 	setRLIMITsForProcess(spec.Process.Rlimits)
 	return nil
 }
