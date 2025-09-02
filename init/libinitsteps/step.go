@@ -3,6 +3,7 @@ package libinitsteps
 
 import (
 	"fmt"
+
 	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 )
@@ -29,7 +30,7 @@ func StepFactory(stepName string) (Step, error) {
 	case "init-cgroup":
 		return &initCgroupStep{}, nil
 	case "namespace":
-		return &restartInNewNamespacesStep{}, nil
+		return &startInNewNamespacesStep{}, nil
 	case "apparmor":
 		return &setAppArmorStep{}, nil
 	case "set-env":
@@ -40,8 +41,6 @@ func StepFactory(stepName string) (Step, error) {
 		return &applyCapsetStep{}, nil
 	case "selinux":
 		return &setSELinuxLabelsLink{}, nil
-	case "usersgroups":
-		return &setUsersAndGroupsStep{}, nil
 	case "hostname":
 		return &setHostnameStep{}, nil
 	default:
