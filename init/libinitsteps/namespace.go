@@ -2,25 +2,69 @@ package libinitsteps
 
 import (
 	"encoding/json"
-	"github.com/mikeyfennelly1/mrun/state"
-	"github.com/opencontainers/runtime-spec/specs-go"
-	"golang.org/x/sys/unix"
-	"log"
 	"os"
 	"os/exec"
 	"syscall"
+
+	"github.com/mikeyfennelly1/mrun/state"
+	"github.com/opencontainers/runtime-spec/specs-go"
+	"golang.org/x/sys/unix"
 )
 
-type restartInNewNamespacesStep struct{}
+type startInNewNamespacesStep struct{}
 
-func (nci *restartInNewNamespacesStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
-	panic("implement me")
+func (nci *startInNewNamespacesStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
+	p, err := getIsolatedProcessProfile()
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("/proc/self/exe", "start", stateManager.GetContainerID())
+
+	// Set the command to run in a new mount namespace
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Cloneflags: p.getCloneFlagBitMask(),
+	}
+
+	if spec.Linux.GIDMappings != nil {
+		mappings := []syscall.SysProcIDMap{}
+		for _, m := range spec.Linux.GIDMappings {
+			thisSysProcIDMap := syscall.SysProcIDMap{
+				ContainerID: int(m.ContainerID),
+				HostID:      int(m.HostID),
+				Size:        int(m.Size),
+			}
+			mappings = append(mappings, thisSysProcIDMap)
+		}
+		cmd.SysProcAttr.GidMappings = mappings
+	}
+	if spec.Linux.UIDMappings != nil {
+		mappings := []syscall.SysProcIDMap{}
+		for _, m := range spec.Linux.UIDMappings {
+			thisSysProcIDMap := syscall.SysProcIDMap{
+				ContainerID: int(m.ContainerID),
+				HostID:      int(m.HostID),
+				Size:        int(m.Size),
+			}
+			mappings = append(mappings, thisSysProcIDMap)
+		}
+		cmd.SysProcAttr.UidMappings = mappings
+	}
+
+	// Set input/output to standard io options
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Run the command
+	if err := cmd.Run(); err != nil {
+		return err
+	}
 	return nil
 }
 
 type processNamespaceProfile struct {
 	// the binary to run when we enter the new namespace
-	// if left as an empty string, process binary will be bash
 	ProcessBinary string
 
 	// these namespaces will correspond to the clone flags
@@ -51,25 +95,6 @@ func getIsolatedProcessProfile() (*processNamespaceProfile, error) {
 	return &testNamespaceProfile, nil
 }
 
-func (p *processNamespaceProfile) startShellInNewNamespaces() {
-	cmd := exec.Command("/bin/sh")
-
-	// Set the command to run in a new mount namespace
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: p.getCloneFlagBitMask(),
-	}
-
-	// Set input/output to inherit from current process
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// Run the command
-	if err := cmd.Run(); err != nil {
-		log.Fatal(err)
-	}
-}
-
 func (p *processNamespaceProfile) getCloneFlagBitMask() uintptr {
 	result := 0
 
@@ -97,31 +122,4 @@ func (p *processNamespaceProfile) getCloneFlagBitMask() uintptr {
 	}
 
 	return uintptr(result)
-}
-
-// restartInNewNS execs the current program, but in new namespaces
-// according to the config file namespaces.
-func restartInNewNS(args ...string) error {
-	p, err := getIsolatedProcessProfile()
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.Command("/proc/self/exe", args...)
-
-	// Set the command to run in a new mount namespace
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: p.getCloneFlagBitMask(),
-	}
-
-	// Set input/output to standard io options
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// Run the command
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
 }
