@@ -1,15 +1,17 @@
 package libinitsteps
 
 import (
+	"strings"
+
+	"github.com/mikeyfennelly1/mrun/state"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
-	"strings"
 )
 
 type setEnvVarsStep struct{}
 
 func (sev *setEnvVarsStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
-	panic("implement me")
+	setEnvVars(spec.Process.Env)
 	return nil
 }
 
@@ -24,7 +26,6 @@ func setEnvVar(envVar string) {
 	if strings.HasPrefix(envVar, path) {
 		pathVars := strings.Split(strings.TrimPrefix(envVar, path), ":")
 		for _, e := range pathVars {
-
 			logrus.Infof("path variable: %s\n", e)
 		}
 	}
