@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/mikeyfennelly1/mrun/cmd"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -18,6 +19,7 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
+	rootCmd.AddCommand(cmd.Create)
 	rootCmd.AddCommand(cmd.Start)
 	rootCmd.AddCommand(cmd.Spec)
 	rootCmd.AddCommand(cmd.Ps)
