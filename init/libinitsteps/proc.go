@@ -33,9 +33,6 @@ func (c *chrootStep) Execute(spec *specs.Spec, stateManager *state.StateManager)
 
 type setUsersAndGroupsStep struct{}
 
-func (s *setUsersAndGroupsStep) Execute(spec *specs.Spec, stateManager *state.StateManager) error {
-	//TODO implement me
-	panic("implement me")
 	return nil
 }
 
