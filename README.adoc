@@ -41,7 +41,7 @@ mrun --version
 === Spawning a container
 To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
 
-==== Get a container filesystem
+==== Get a Container filesystem
 I recommend that to get started just testing out low level container stuff, you use alpine as your first rootfs.
 
 [source, bash]
@@ -51,15 +51,13 @@ curl -fsSL https://raw.githubusercontent.com/mikeyfennelly1/mrun/main/scripts/in
 [source, bash]
 mrun spec
 
-==== Start the container
+==== Create a Container
 [source, bash]
-mrun start
-
-Now run `mrun start`, and your default configurations should start a bash process in the container.
+mrun create ./config.json
 
 == Reading and documentation
 
-During the creation of this project I did a lot of reading on containerization. I have created link:https://github.com/mikeyfennelly1/mrun/tree/main/docs[documentation] which has some reading that can be a bit more approachable to a newcomer than trying to sieve through the internet for reading material. Containers are quite a complex topic, and I hope that these docs can help understand some of the elements involved.
+During the creation of this project I did a lot of reading on containerization. I have created link:docs/[documentation] which has some reading that can be a bit more approachable to a newcomer than trying to sieve through the internet for reading material. Containers are quite a complex topic, and I hope that these docs can help understand some of the elements involved.
 
 The docs folder has reading about OCI standards and Kernel features that underpin container technology like control groups (cgroups).
 
