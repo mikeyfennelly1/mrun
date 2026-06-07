@@ -94,6 +94,8 @@ function host_has_prerequisite_binaries () {
 function system_install () {
     printf "INFO: installing mrun to ${MRUN_BINARY_PATH}\n" >&1
 
+    rm "${MRUN_BINARY_PATH}" || true
+
     if ! build_binary "${PROJ_ROOT}" "${MRUN_BINARY_PATH}"; then
         printf "ERROR: failed to build binary\n" >&2
         exit "${SIG_ERR}"
@@ -116,12 +118,7 @@ function system_install () {
     fi
     printf "DEBUG: successfully set capabilities\n" >&1
 
-    printf "INFO: creating alias mrun for binary ${MRUN_BINARY_PATH} in ~/.bashrc and ~/.zshrc if exists.\n" >&1
-    if ! create_persistent_binary_alias; then 
-        printf "ERROR: failed to create persistent binary alias.\n" >&2
-        exit "${SIG_ERR}"
-    fi
-    printf "DEBUG: successfully successfully set alias\n" >&1
+    printf "\n\n mrun installed at ${MRUN_BINARY_PATH}\n"
 
     return "${SIG_SUCCESS}"
 }
@@ -154,11 +151,6 @@ function binary_chmod_chown () {
     return "${SIG_SUCCESS}"
 }
 
-function create_persistent_binary_alias () {
-    alias mrun="${MRUN_BINARY_PATH}"
-    source ~/.zshrc
-}
-
 function set_all_mrun_file_capabilities () {
     local file_path="$1"
     local capability_list="$2"
@@ -170,7 +162,7 @@ function set_all_mrun_file_capabilities () {
 }
 
 function get_all_capabilities() {
-    ALL_CAPABILITIES=(
+    local -a ALL_CAPABILITIES=(
         # syslog(2) — read kernel message ring buffer and control console log level; man 7 capabilities, man 2 syslog
         cap_syslog,
         # (LSM hook) — override Mandatory Access Control (e.g. Smack) policy checks; man 7 capabilities
@@ -182,13 +174,15 @@ function get_all_capabilities() {
         # epoll_ctl(2) EPOLLWAKEUP, eventfd(2) — take wakelock-style references to prevent the system from suspending; man 7 capabilities
         cap_block_suspend,
     )
-    printf "${ALL_CAPABILITIES}" >&0
+    local cap_str
+    cap_str="$(printf '%s' "${ALL_CAPABILITIES[@]}")"
+    printf '%s\n' "${cap_str%,}+ep"
     return "${SIG_SUCCESS}"
 }
 
 function F_CAPS () {
     # file capabilities
-    F_CAPS=(
+    local -a F_CAPS=(
         # chown(2), fchown(2), lchown(2) — bypass UID/GID ownership restrictions on files; man 7 capabilities
         cap_chown,
         # chmod(2), utime(2), flock(2) — bypass permission checks that require the process to own the file; man 7 capabilities
@@ -203,23 +197,23 @@ function F_CAPS () {
         cap_lease
     )
 
-    printf "${F_CAPS}" >&0
+    printf '%s\n' "${F_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function DAC_CAPS() {
-    local DAC_CAPS=(
+    local -a DAC_CAPS=(
         # open(2), read(2), write(2), execve(2) — bypass discretionary access control (DAC) read/write/execute checks; man 7 capabilities
         cap_dac_override,
         # open(2), opendir(3) — bypass DAC for file reads and directory searches only (no write); man 7 capabilities
         cap_dac_read_search
     )
-    printf "${DAC_CAPS}" >&0
+    printf '%s\n' "${DAC_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function PROC_CAPS() {
-    local PROC_CAPS=(
+    local -a PROC_CAPS=(
         # kill(2), sigqueue(3) — send signals to processes owned by other users; man 7 capabilities
         cap_kill,
         # setgid(2), setegid(2), setregid(2), setresgid(2), setgroups(2) — manipulate process GIDs freely; man 7 capabilities
@@ -227,21 +221,21 @@ function PROC_CAPS() {
         # setuid(2), seteuid(2), setreuid(2), setresuid(2) — manipulate process UIDs freely; man 7 capabilities
         cap_setuid
     )
-    printf "${PROC_CAPS}" >&0
+    printf '%s\n' "${PROC_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function CAPSET_CAPS() {
-    local CAPSET_CAPS=(
+    local -a CAPSET_CAPS=(
         # capset(2) — transfer or drop any capability in the process's permitted set; man 7 capabilities
         cap_setpcap
     )
-    printf "${CAPSET_CAPS}" >&0
+    printf '%s\n' "${CAPSET_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function NET_CAPS() {
-    local NET_CAPS=(
+    local -a NET_CAPS=(
         # bind(2) — bind a socket to a privileged port (port number < "${EXIT_ERROR}"024); man 7 capabilities
         cap_net_bind_service,
         # setsockopt(2) SO_BROADCAST — make socket broadcasts and listen to multicast packets; man 7 capabilities
@@ -251,23 +245,23 @@ function NET_CAPS() {
         # socket(2) SOCK_RAW/SOCK_PACKET — create raw and packet sockets; man 7 capabilities
         cap_net_raw
     )
-    printf "${NET_CAPS}" >&0
+    printf '%s\n' "${NET_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function SHMEM_IPC_CAPS() {
-    SHMEM_IPC_CAPS=(
+    local -a SHMEM_IPC_CAPS=(
         # mlock(2), mlockall(2), mmap(2), shmctl(2) SHM_LOCK — lock pages into RAM, bypassing RLIMIT_MEMLOCK; man 7 capabilities
         cap_ipc_lock,
         # msgctl(2), semctl(2), shmctl(2) — bypass permission checks on System V IPC objects; man 7 capabilities
         cap_ipc_owner
     )
-    printf "${SHMEM_IPC_CAPS}" >&0
+    printf '%s\n' "${SHMEM_IPC_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function SYS_CAPS() {
-    local SYS_CAPS=(
+    local -a SYS_CAPS=(
         # init_module(2), delete_module(2) — load and unload kernel modules; man 7 capabilities
         cap_sys_module,
         # iopl(2), ioperm(2) — access /dev/mem, /dev/kmem, and raw I/O ports; man 7 capabilities
@@ -291,12 +285,12 @@ function SYS_CAPS() {
         # vhangup(2), ioctl(2) — configure tty devices and perform privileged tty operations; man 7 capabilities
         cap_sys_tty_config,
     )
-    printf "${SHMEM_IPC_CAPS}" >&0
+    printf '%s\n' "${SYS_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function KAUDIT_CAPS() {
-    local KAUDIT_CAPS=(
+    local -a KAUDIT_CAPS=(
         # (kernel audit subsystem) — write records to the kernel audit log; man 7 capabilities
         cap_audit_write,
         # (kernel audit subsystem) — set audit rules, enable/disable auditing, read audit status; man 7 capabilities
@@ -304,12 +298,12 @@ function KAUDIT_CAPS() {
         # (netlink AUDIT_GET) — read the kernel audit log via a multicast netlink socket; man 7 capabilities
         cap_audit_read,
     )
-    printf "${KAUDIT_CAPS}" >&0
+    printf '%s\n' "${KAUDIT_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
 function KERNEL_ABI_CAPS() {
-    local KERNEL_ABI_CAPS=(
+    local -a KERNEL_ABI_CAPS=(
         # perf_event_open(2) — access CPU performance counters and kernel profiling facilities; man 7 capabilities, man 2 perf_event_open
         cap_perfmon,
         # bpf(2) — load BPF programs, create BPF maps, and read kernel data structures via BPF; man 7 capabilities, man 2 bpf
@@ -318,7 +312,7 @@ function KERNEL_ABI_CAPS() {
         cap_checkpoint_restore=ep
     )
 
-    printf "${KERNEL_ABI_CAPS}" >&0
+    printf '%s\n' "${KERNEL_ABI_CAPS[@]}"
     return "${SIG_SUCCESS}"
 }
 
