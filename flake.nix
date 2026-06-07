@@ -37,7 +37,7 @@
       devShells = forEachSystem (pkgs: {
         default = pkgs.mkShell {
           packages = with pkgs; [
-            go_1_23      # matches go.mod `go 1.23`
+            go_1_25      # go.mod requires >=1.23; 1.25 is backward-compatible
             go-task      # Taskfile runner
             bats         # bash test framework (tests/build.bats)
             libcap       # provides setcap / getcap for the build script
