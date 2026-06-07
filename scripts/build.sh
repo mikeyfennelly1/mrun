@@ -3,8 +3,8 @@
 set -euo pipefail
 set -o nounset
 
-MRUN_BINARY_PATH="/usr/bin/mrun"
-GO_ROOT="/usr/local/go/bin/go"
+MRUN_BINARY_PATH="/tmp/mrun"
+GO_ROOT="$(which go)"
 TMP_PATH="/tmp/mrun"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJ_ROOT="${SCRIPT_DIR}/.."
@@ -39,7 +39,7 @@ function main () {
 
     case "$1" in
         system-install) system_install;
-    esac 
+    esac
 }
 
 function print_usage () {
@@ -92,10 +92,9 @@ function host_has_prerequisite_binaries () {
 #
 # exits: true
 function system_install () {
-    printf "INFO: setting all necessary file capabilities on path ${MRUN_BINARY_PATH}\n" >&1
+    printf "INFO: installing mrun to ${MRUN_BINARY_PATH}\n" >&1
 
-    build_out=$(build_binary "${PROJ_ROOT}" "${MRUN_BINARY_PATH}")
-    if [[ $? -ne 0 ]]; then
+    if ! build_binary "${PROJ_ROOT}" "${MRUN_BINARY_PATH}"; then
         printf "ERROR: failed to build binary\n" >&2
         exit "${SIG_ERR}"
     fi
@@ -108,8 +107,10 @@ function system_install () {
         exit "$SIG_ERR"
     fi
 
+    local all_capabilities=$(get_all_capabilities)
+
     printf "INFO: setting all necessary file capabilities on path ${MRUN_BINARY_PATH}\n" >&1
-    if ! set_all_mrun_file_capabilities; then 
+    if ! set_all_mrun_file_capabilities "${MRUN_BINARY_PATH}" "${all_capabilities}"; then 
         printf "ERROR: error setting mrun file capabilities.\n" >&2
         exit "${SIG_ERR}"
     fi
@@ -130,12 +131,14 @@ function build_binary () {
     local build_path="$1"
     local out_path="$2"
 
-    build_cmd="${GO_ROOT} build ${build_path} -o ${out_path}"
+    build_cmd="${GO_ROOT} build -o ${out_path} ${build_path}"
     printf "DEBUG: running build command: ${build_cmd}\n" >&1
-    if ! build_output=$(bash -c "${build_cmd}"); then
-        printf "FATAL: build failure:\n${build_output}\n" >&2
+    if ! bash -c "${build_cmd}"; then
+        printf "FATAL: build failure:\n" >&2
         return "${SIG_ERR}"
     fi
+
+    mv ""
 
     return "${SIG_SUCCESS}"
 }
@@ -313,7 +316,7 @@ function INODE_CAPS() {
     return "${SIG_SUCCESS}"
 }
 
-function construct_ALL_CAPABILITIES_list() {
+function get_all_capabilities() {
     ALL_CAPABILITIES=(
         # syslog(2) — read kernel message ring buffer and control console log level; man 7 capabilities, man 2 syslog
         cap_syslog,
