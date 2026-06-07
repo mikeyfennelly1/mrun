@@ -116,7 +116,6 @@ function system_install () {
     fi
     printf "DEBUG: successfully set capabilities\n" >&1
 
-
     printf "INFO: creating alias mrun for binary ${MRUN_BINARY_PATH} in ~/.bashrc and ~/.zshrc if exists.\n" >&1
     if ! create_persistent_binary_alias; then 
         printf "ERROR: failed to create persistent binary alias.\n" >&2
@@ -167,6 +166,23 @@ function set_all_mrun_file_capabilities () {
     if ! sudo setcap "${capability_list}" "${file_path}"; then
         return "${SIG_ERR}"
     fi
+    return "${SIG_SUCCESS}"
+}
+
+function get_all_capabilities() {
+    ALL_CAPABILITIES=(
+        # syslog(2) — read kernel message ring buffer and control console log level; man 7 capabilities, man 2 syslog
+        cap_syslog,
+        # (LSM hook) — override Mandatory Access Control (e.g. Smack) policy checks; man 7 capabilities
+        cap_mac_override,
+        # (LSM hook) — perform MAC administrative operations (e.g. load Smack/SELinux policy); man 7 capabilities
+        cap_mac_admin,
+        # timerfd_create(2) CLOCK_REALTIME_ALARM/CLOCK_BOOTTIME_ALARM — set timers that can wake the system from suspend; man 7 capabilities
+        cap_wake_alarm,
+        # epoll_ctl(2) EPOLLWAKEUP, eventfd(2) — take wakelock-style references to prevent the system from suspending; man 7 capabilities
+        cap_block_suspend,
+    )
+    printf "${ALL_CAPABILITIES}" >&0
     return "${SIG_SUCCESS}"
 }
 
@@ -313,23 +329,6 @@ function INODE_CAPS() {
     )
 
     printf '%s\n' "${INODE_CAPS[@]}"
-    return "${SIG_SUCCESS}"
-}
-
-function get_all_capabilities() {
-    ALL_CAPABILITIES=(
-        # syslog(2) — read kernel message ring buffer and control console log level; man 7 capabilities, man 2 syslog
-        cap_syslog,
-        # (LSM hook) — override Mandatory Access Control (e.g. Smack) policy checks; man 7 capabilities
-        cap_mac_override,
-        # (LSM hook) — perform MAC administrative operations (e.g. load Smack/SELinux policy); man 7 capabilities
-        cap_mac_admin,
-        # timerfd_create(2) CLOCK_REALTIME_ALARM/CLOCK_BOOTTIME_ALARM — set timers that can wake the system from suspend; man 7 capabilities
-        cap_wake_alarm,
-        # epoll_ctl(2) EPOLLWAKEUP, eventfd(2) — take wakelock-style references to prevent the system from suspending; man 7 capabilities
-        cap_block_suspend,
-    )
-    printf "${ALL_CAPABILITIES}" >&0
     return "${SIG_SUCCESS}"
 }
 
