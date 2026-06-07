@@ -1,61 +1,58 @@
-= mrun
-:toc:
+# mrun
 
-== Overview
+## Overview
 
-mrun (**_m_**ike's **_run_**time) is a low level, OCI compliant container runtime written in Go. The mrun container runtime is exclusive to Linux, and will probably work best on Ubuntu.
+mrun (***m***ike's ***run***time) is a low level, OCI compliant container runtime written in Go. The mrun container runtime is exclusive to Linux, and will probably work best on Ubuntu.
 
 [NOTE]
-====
 This runtime is created to be compatible with Linux operating systems that have systemd as the init system. I did not create this runtime to be reliable/platform independant. Do not rely on this runtime.
-====
 
-=== What is a container?
+### What is a container?
 
 The Open Container Initiative (OCI) defines a container as a standardized, portable, and lightweight runtime environment for software that bundles an application and its dependencies, libraries, and configuration files.
 
-== Usage
+## Usage
 
-=== System Prerequisites
+### System Prerequisites
 
 My system is Ubuntu 22.04 using Linux Kernel v6.8. I recommend that you use some similar Ubuntu/Debian-based system, but ideally as close as possible. I can not guarantee portability as of now.
 
 systemd, a filesystem that supports extended attributes and a Kernel newer than v4.5 - to have cgroupv2 support. If you are currently running Linux, this configuration is more than likely already the case for your setup, but just to make note of these in case of unexpected behaviors.
 
-=== Install
+### Install
 
 Run the installation script with the following command:
 
 [source, bash]
-----
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/mikeyfennelly1/mrun.git/scripts/install.sh | bash
-----
+```
 
-Validate your setup with the following command:
-
-[source, bash]
-----
 mrun --version
-----
 
-=== Spawning a container
+### Spawning a container
+
 To start a container you need an OCI compliant specification (config.json) file, specifying your containerized environment, and a directory for your container's environment filesystem, with the directory titled 'rootfs' - both in your current working directory. For now (until I implement `mrun spec`) use `runc spec` from https://github.com/opencontainers/runc[the runc container runtime].
 
-==== Get a Container filesystem
+#### Get a Container filesystem
+
 I recommend that to get started just testing out low level container stuff, you use alpine as your first rootfs.
 
 [source, bash]
 curl -fsSL https://raw.githubusercontent.com/mikeyfennelly1/mrun/main/scripts/install-mini-alpine.sh | bash
 
-==== Create a config.json
+#### Create a config.json
+
 [source, bash]
 mrun spec
 
-==== Create a Container
+#### Create a Container
+
 [source, bash]
 mrun create ./config.json
 
-== Reading and documentation
+## Reading and documentation
 
 During the creation of this project I did a lot of reading on containerization. I have created link:docs/[documentation] which has some reading that can be a bit more approachable to a newcomer than trying to sieve through the internet for reading material. Containers are quite a complex topic, and I hope that these docs can help understand some of the elements involved.
 
