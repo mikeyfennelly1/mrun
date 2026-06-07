@@ -11,27 +11,136 @@ PROJ_ROOT="${SCRIPT_DIR}/.."
 SIG_SUCCESS=0
 SIG_ERR=1
 
+declare -A COMMANDS=(
+    [system-install]="Install binary as the system default - overwriting ~/.bashrc and ~/.zshrc"
+)
 
+set +eou nounset
+INPUTTED_CMD="$1"
+set -eou nounset
+
+# host_has_prerequisite_binaries
+#
+# checks if the required binaries exist on the host
+#
+# stdout: logs
+# stderr: table of nonexistent_binaries
+#
+# exits: true
 function main () {
+    if [[ -z "${INPUTTED_CMD}" || -z "${COMMANDS[$1]}" ]]; then
+        print_usage
+        return "${SIG_ERR}"
+    fi
+
+    if ! host_has_prerequisite_binaries; then
+        exit "${SIG_ERR}"
+    fi
+
+    case "$1" in
+        system-install) system_install;
+    esac 
+}
+
+function print_usage () {
+    printf "Usage: $0 <command>\n\n"
+    printf "Available commands:\n"
+    for cmd in "${!COMMANDS[@]}"; do
+        printf "\t${cmd}\n"
+    done
+    return "${SIG_SUCCESS}"
+}
+
+# host_has_prerequisite_binaries
+#
+# checks if the required binaries exist on the host
+#
+# stdout: logs
+# stderr: table of nonexistent_binaries
+#
+# exits: false
+function host_has_prerequisite_binaries () {
+    local prerequisite_binaries=(
+        "${GO_ROOT}"
+    )
+    local nonexistent_binaries=""
+    for binary in "${prerequisite_binaries}"; do 
+        if ! stat "${binary}" >&/dev/null;then 
+            nonexistent_binaries+="\t${binary}\n"
+        fi
+    done
+    if [[ -n "${nonexistent_binaries}" ]]; then
+        printf "FATAL: prerequisite binaries not found:\n" >&2
+        printf "${nonexistent_binaries}\n" >&2
+        return "${SIG_ERR}"
+    fi
+    return 0
+}
+
+# system_install
+#
+# 1. Builds binary from source using Golang compiler.
+# 2. Sets necessary file capabilities on the binary.
+#
+# ENV:
+#      MRUN_BINARY_PATH = system path to write the compiled binary to.
+#           default: /usr/bin/mrun
+#      MRUN_BINARY_PATH = system path to write the compiled binary to.
+#
+# stdout: 
+# stderr:
+#
+# exits: true
+function system_install () {
     printf "INFO: setting all necessary file capabilities on path ${MRUN_BINARY_PATH}\n" >&1
 
-    if ! build_binary; then 
-        printf "ERROR: error setting mrun file capabilities.\n" >&2
+    build_out=$(build_binary "${PROJ_ROOT}" "${MRUN_BINARY_PATH}")
+    if [[ $? -ne 0 ]]; then
+        printf "ERROR: failed to build binary\n" >&2
         exit "${SIG_ERR}"
     fi
     printf "DEBUG: successfully built binary\n" >&2
+
+    printf "INFO: changing group and user ownership of ${MRUN_BINARY_PATH}\n" >&1
+    binary_chmod_chown "${PROJ_ROOT}" "${PROJ_ROOT}"
+    if [[ $? -ne 0 ]]; then
+        printf "ERROR: failed to change ownership & mode of ${MRUN_BINARY_PATH}\n" >&2
+        exit "$SIG_ERR"
+    fi
 
     printf "INFO: setting all necessary file capabilities on path ${MRUN_BINARY_PATH}\n" >&1
     if ! set_all_mrun_file_capabilities; then 
         printf "ERROR: error setting mrun file capabilities.\n" >&2
         exit "${SIG_ERR}"
     fi
-    printf "DEBUG: successfully set capabilities\n" >&2
+    printf "DEBUG: successfully set capabilities\n" >&1
+
+
+    printf "INFO: creating alias mrun for binary ${MRUN_BINARY_PATH} in ~/.bashrc and ~/.zshrc if exists.\n" >&1
+    if ! create_persistent_binary_alias; then 
+        printf "ERROR: failed to create persistent binary alias.\n" >&2
+        exit "${SIG_ERR}"
+    fi
+    printf "DEBUG: successfully successfully set alias\n" >&1
 
     return "${SIG_SUCCESS}"
 }
 
-function binary_post_process () {
+function build_binary () {
+    local build_path="$1"
+    local out_path="$2"
+
+    build_cmd="${GO_ROOT} build ${build_path} -o ${out_path}"
+    printf "DEBUG: running build command: ${build_cmd}\n" >&1
+    if ! build_output=$(bash -c "${build_cmd}"); then
+        printf "FATAL: build failure:\n${build_output}\n" >&2
+        return "${SIG_ERR}"
+    fi
+
+    return "${SIG_SUCCESS}"
+}
+
+function binary_chmod_chown () {
     if ! sudo chmod +s ${MRUN_BINARY_PATH}; then 
         printf "ERROR: failed to chmod ${MRUN_BINARY_PATH}\n" >&2
         return "${SIG_ERR}"
@@ -43,33 +152,19 @@ function binary_post_process () {
     return "${SIG_SUCCESS}"
 }
 
-function build_binary () {
-    local build_path="$"${SIG_ERR}""
-    local out_path="$"${SIG_ERR}""
-    local build_cmd="${GO_ROOT} build ${build_path} -o ${out_path}"
-
-    printf "DEBUG: running build command: ${build_cmd}\n" >&2
-    if ! build_output=$(bash -c "${build_cmd}"); then
-        printf "FATAL: build failure:\n${build_output}\n" >&2
-        exit "${SIG_ERR}"
-    fi
-
-    return "${SIG_SUCCESS}"
+function create_persistent_binary_alias () {
+    alias mrun="${MRUN_BINARY_PATH}"
+    source ~/.zshrc
 }
 
 function set_all_mrun_file_capabilities () {
     local file_path="$1"
     local capability_list="$2"
-    
+
     if ! sudo setcap "${capability_list}" "${file_path}"; then
         return "${SIG_ERR}"
     fi
     return "${SIG_SUCCESS}"
-}
-
-function create_persistent_binary_alias () {
-    alias mrun="${MRUN_BINARY_PATH}"
-    source ~/.zshrc
 }
 
 function F_CAPS () {
