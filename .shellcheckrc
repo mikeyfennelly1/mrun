@@ -1,0 +1,11 @@
+shell=bash
+
+# Warn when a command substitution masks the exit code of the inner command
+# (e.g. var=$(cmd); if [[ $? -ne 0 ]] — the $? always reflects the assignment, not cmd)
+enable=check-extra-masked-returns
+
+# Warn when case statements have no default (*) branch
+enable=add-default-case
+
+# Require ${var} over $var for consistency
+enable=require-variable-braces
